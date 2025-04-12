@@ -14,4 +14,5 @@ urlpatterns = [
     path('view_csv/<int:csv_id>/', views.view_csv, name='view_csv'),
     path('visualize/<int:csv_id>/', views.visualize_data, name='visualize_data'),
     path('download_csv/<int:csv_id>/', views.download_csv, name='download_csv'),
+    path('health/', views.health_check, name='health_check'),
 ]

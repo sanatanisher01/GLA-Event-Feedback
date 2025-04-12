@@ -9,7 +9,7 @@ import base64
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from .models import Event, CSVFile
 from .forms import CustomAuthenticationForm, EventForm, CSVUploadForm
@@ -510,4 +510,15 @@ def visualize_data(request, csv_id):
         'charts': charts,
         'current_chart_type': chart_type,
         'available_chart_types': available_chart_types
+    })
+
+
+def health_check(request):
+    """
+    Simple health check endpoint to verify the application is running.
+    This can be used by monitoring services and helps with Render's auto-startup.
+    """
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'GLA Event Feedback system is running',
     })
