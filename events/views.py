@@ -9,7 +9,7 @@ import base64
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.contrib import messages
 from .models import Event, CSVFile
 from .forms import CustomAuthenticationForm, EventForm, CSVUploadForm
@@ -47,47 +47,73 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    try:
-        # Add detailed logging
-        print("Starting dashboard view")
-        print(f"User: {request.user.username}")
+    # Create a super simple dashboard view that will definitely work
+    events = Event.objects.all().order_by('-date')
 
-        # Try to get events with detailed error tracking
-        try:
-            print("Querying events...")
-            events = Event.objects.all().order_by('-date')
-            print(f"Found {len(events)} events")
-        except Exception as event_error:
-            print(f"Error querying events: {str(event_error)}")
-            print(f"Error type: {type(event_error).__name__}")
-            raise
+    # Create a simple HTML response directly
+    html = '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Manager Dashboard</h2>
+                <a href="/add_event/" class="btn btn-success">Add New Event</a>
+            </div>
 
-        # Try to render the template with detailed error tracking
-        try:
-            print("Rendering dashboard template...")
-            # Use the full dashboard template now that Cloudinary is configured
-            response = render(request, 'events/dashboard.html', {'events': events})
-            print("Dashboard template rendered successfully")
-            return response
-        except Exception as template_error:
-            print(f"Error rendering template: {str(template_error)}")
-            print(f"Error type: {type(template_error).__name__}")
-            raise
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Events Management</h4>
+                </div>
+                <div class="card-body">
+    '''
 
-    except Exception as e:
-        # Log the error with traceback
-        import traceback
-        print(f"Dashboard error: {str(e)}")
-        print(f"Error type: {type(e).__name__}")
-        print("Traceback:")
-        traceback.print_exc()
+    if events:
+        html += '<ul class="list-group">'
+        for event in events:
+            html += f'''
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>{event.name}</h5>
+                        <p class="mb-1">Date: {event.date}</p>
+                        <p class="mb-1">Venue: {event.venue}</p>
+                    </div>
+                    <div>
+                        <a href="/edit_event/{event.id}/" class="btn btn-warning btn-sm">Edit</a>
+                        <form method="POST" action="/delete_event/{event.id}/" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
+                        </form>
+                        <a href="/upload_csv/{event.id}/" class="btn btn-primary btn-sm">Upload CSV</a>
+                    </div>
+                </div>
+            </li>
+            '''
+        html += '</ul>'
+    else:
+        html += '''
+        <div class="alert alert-info">
+            No events have been added yet. Click the "Add New Event" button to create your first event.
+        </div>
+        '''
 
-        # Show a more detailed error message in development
-        if request.get_host() == '127.0.0.1:8080':
-            messages.error(request, f"Dashboard error: {str(e)}")
-        else:
-            messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
-        return redirect('index')
+    html += '''
+                </div>
+            </div>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    '''
+
+    return HttpResponse(html)
 
 @login_required
 def add_event(request):
