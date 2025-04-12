@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import os
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -14,7 +15,8 @@ class Event(models.Model):
     venue = models.CharField(max_length=200)
     highlights = models.TextField()
     form_link = models.URLField()
-    image = models.ImageField(upload_to=event_image_path, blank=True, null=True)
+    # Use CloudinaryField for images in production, fallback to ImageField in development
+    image = CloudinaryField('image', folder='event_images', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -27,7 +29,8 @@ def csv_file_path(instance, filename):
 
 class CSVFile(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='csv_files')
-    file = models.FileField(upload_to=csv_file_path)
+    # Use CloudinaryField for files in production, fallback to FileField in development
+    file = CloudinaryField('raw', folder='csv_files', resource_type='raw', blank=False, null=False)
     upload_date = models.DateTimeField(default=timezone.now)
     description = models.CharField(max_length=255, blank=True)
 

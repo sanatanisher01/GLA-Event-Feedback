@@ -107,7 +107,17 @@ def view_csv(request, csv_id):
     headers = []
 
     try:
-        df = pd.read_csv(csv_file.file.path)
+        # Handle both local files and Cloudinary URLs
+        if hasattr(csv_file.file, 'url'):
+            # For Cloudinary files
+            import requests
+            response = requests.get(csv_file.file.url)
+            content = response.content.decode('utf-8')
+            df = pd.read_csv(io.StringIO(content))
+        else:
+            # For local files
+            df = pd.read_csv(csv_file.file.path)
+
         headers = df.columns.tolist()
         data = df.values.tolist()
     except Exception as e:
@@ -122,10 +132,21 @@ def view_csv(request, csv_id):
 @login_required
 def download_csv(request, csv_id):
     csv_file = get_object_or_404(CSVFile, id=csv_id)
-    with open(csv_file.file.path, 'rb') as f:
-        response = HttpResponse(f.read(), content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="{csv_file.filename()}"'
-        return response
+
+    # Handle both local files and Cloudinary URLs
+    if hasattr(csv_file.file, 'url'):
+        # For Cloudinary files
+        import requests
+        response = requests.get(csv_file.file.url)
+        content = response.content
+        http_response = HttpResponse(content, content_type='text/csv')
+    else:
+        # For local files
+        with open(csv_file.file.path, 'rb') as f:
+            http_response = HttpResponse(f.read(), content_type='text/csv')
+
+    http_response['Content-Disposition'] = f'attachment; filename="{csv_file.filename()}"'
+    return http_response
 
 @login_required
 def visualize_data(request, csv_id):
@@ -134,7 +155,16 @@ def visualize_data(request, csv_id):
     chart_type = request.GET.get('chart_type', 'all')
 
     try:
-        df = pd.read_csv(csv_file.file.path)
+        # Handle both local files and Cloudinary URLs
+        if hasattr(csv_file.file, 'url'):
+            # For Cloudinary files
+            import requests
+            response = requests.get(csv_file.file.url)
+            content = response.content.decode('utf-8')
+            df = pd.read_csv(io.StringIO(content))
+        else:
+            # For local files
+            df = pd.read_csv(csv_file.file.path)
 
         # Generate charts for numeric columns
         numeric_columns = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
