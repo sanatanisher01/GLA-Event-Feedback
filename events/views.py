@@ -58,8 +58,8 @@ def dashboard(request):
         csv_count = csv_files.count()
         visualization_count = csv_count  # Each CSV can be visualized
 
-        # Render the enhanced dashboard template
-        return render(request, 'events/dashboard_enhanced.html', {
+        # Render the modern dashboard template
+        return render(request, 'events/dashboard_modern.html', {
             'events': events,
             'csv_files': csv_files,
             'csv_count': csv_count,

@@ -1,0 +1,467 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 1.5rem 0;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+    
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--bs-primary);
+    }
+    
+    .dashboard-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+    }
+    
+    .stat-content p {
+        margin-bottom: 0;
+        opacity: 0.7;
+    }
+    
+    .table-card {
+        overflow: hidden;
+    }
+    
+    .table-responsive {
+        margin: 0;
+    }
+    
+    .dashboard-table {
+        margin-bottom: 0;
+    }
+    
+    .dashboard-table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    
+    .dashboard-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    .dashboard-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .dashboard-table tbody tr:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.03);
+    }
+    
+    .event-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+    .event-img-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        background-color: rgba(var(--bs-secondary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bs-secondary);
+    }
+    
+    .event-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .event-meta {
+        font-size: 0.85rem;
+        opacity: 0.7;
+    }
+    
+    .action-btn {
+        padding: 0.5rem;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        margin-right: 0.25rem;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .quick-actions {
+        margin-top: 2rem;
+    }
+    
+    .action-card {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .action-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    
+    .badge-custom {
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    .csv-badge {
+        background-color: rgba(var(--bs-info-rgb), 0.1);
+        color: var(--bs-info);
+    }
+    
+    .dropdown-menu {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: none;
+        padding: 0.5rem;
+    }
+    
+    .dropdown-item {
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    
+    [data-bs-theme="dark"] .dashboard-table thead th {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-bs-theme="dark"] .dashboard-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    [data-bs-theme="dark"] .event-img-placeholder {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .dropdown-menu {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    [data-bs-theme="dark"] .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-1">Manager Dashboard</h2>
+            <p class="text-muted">Manage events, feedback, and visualizations</p>
+        </div>
+        <a href="{% url 'add_event' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Add New Event
+        </a>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary bg-opacity-10">
+                        <i class="fas fa-calendar-alt text-primary fa-2x"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ events|length }}</h3>
+                        <p>Total Events</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success bg-opacity-10">
+                        <i class="fas fa-file-csv text-success fa-2x"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ csv_count }}</h3>
+                        <p>CSV Files</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="stat-card">
+                    <div class="stat-icon bg-info bg-opacity-10">
+                        <i class="fas fa-chart-pie text-info fa-2x"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ visualization_count }}</h3>
+                        <p>Visualizations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Events Table -->
+    <div class="card dashboard-card table-card mb-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Events Management</h4>
+        </div>
+        <div class="table-responsive">
+            {% if events %}
+                <table class="table dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                            <th>Venue</th>
+                            <th>Form Link</th>
+                            <th>CSV Files</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if event.image %}
+                                            <div class="me-3">
+                                                <img src="{{ event.image.url }}" alt="{{ event.name }}" class="event-img">
+                                            </div>
+                                        {% else %}
+                                            <div class="me-3">
+                                                <div class="event-img-placeholder">
+                                                    <i class="fas fa-calendar-day"></i>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="event-title">{{ event.name }}</h6>
+                                            <p class="event-meta">{{ event.highlights|truncatechars:50 }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ event.date }}</td>
+                                <td>{{ event.venue }}</td>
+                                <td>
+                                    {% if event.form_link %}
+                                        <a href="{{ event.form_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i>Open Form
+                                        </a>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No Link</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% with csv_files=event.csvfile_set.all %}
+                                        <span class="badge badge-custom csv-badge">{{ csv_files|length }} files</span>
+                                        {% if csv_files %}
+                                            <div class="dropdown d-inline-block ms-1">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    View
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {% for csv in csv_files %}
+                                                        <li>
+                                                            <div class="dropdown-item">
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <span>{{ csv.get_filename }}</span>
+                                                                    <div>
+                                                                        <a href="{% url 'view_csv' csv.id %}" class="btn btn-sm btn-outline-primary" title="View CSV Data">
+                                                                            <i class="fas fa-table"></i>
+                                                                        </a>
+                                                                        <a href="{% url 'visualize_data' csv.id %}" class="btn btn-sm btn-outline-info" title="Visualize Data">
+                                                                            <i class="fas fa-chart-bar"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    <div class="d-flex">
+                                        <a href="{% url 'edit_event' event.id %}" class="action-btn btn-warning" title="Edit Event">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'upload_csv' event.id %}" class="action-btn btn-primary" title="Upload CSV">
+                                            <i class="fas fa-upload"></i>
+                                        </a>
+                                        <button type="button" class="action-btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}" title="Delete Event">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title" id="deleteModalLabel{{ event.id }}">Confirm Deletion</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete the event <strong>{{ event.name }}</strong>?</p>
+                                                    <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form method="POST" action="{% url 'delete_event' event.id %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger">Delete Event</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="alert alert-info m-3">
+                    <i class="fas fa-info-circle me-2"></i>No events have been added yet. Click the "Add New Event" button to create your first event.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <h4 class="mb-3 quick-actions"><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="action-card">
+                    <div class="action-icon bg-primary bg-opacity-10">
+                        <i class="fas fa-calendar-plus text-primary fa-2x"></i>
+                    </div>
+                    <h5>Create New Event</h5>
+                    <p class="text-muted mb-3">Add a new event with details and form link</p>
+                    <a href="{% url 'add_event' %}" class="btn btn-primary">Create Event</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="action-card">
+                    <div class="action-icon bg-success bg-opacity-10">
+                        <i class="fas fa-file-upload text-success fa-2x"></i>
+                    </div>
+                    <h5>Upload Feedback</h5>
+                    <p class="text-muted mb-3">Upload CSV feedback data for an event</p>
+                    {% if events %}
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                                Select Event
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for event in events %}
+                                    <li><a class="dropdown-item" href="{% url 'upload_csv' event.id %}">{{ event.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <button type="button" class="btn btn-success" disabled>No Events</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="action-card">
+                    <div class="action-icon bg-info bg-opacity-10">
+                        <i class="fas fa-chart-bar text-info fa-2x"></i>
+                    </div>
+                    <h5>View Visualizations</h5>
+                    <p class="text-muted mb-3">Analyze feedback data with visualizations</p>
+                    {% if csv_files %}
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                                Select CSV
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for csv in csv_files %}
+                                    <li><a class="dropdown-item" href="{% url 'visualize_data' csv.id %}">{{ csv.event.name }} - {{ csv.get_filename }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <button type="button" class="btn btn-info" disabled>No CSV Files</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
