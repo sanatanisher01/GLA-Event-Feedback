@@ -1,0 +1,59 @@
+{% extends 'events/base.html' %}
+
+{% block title %}College Event Feedback - Home{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h1 class="display-4">College Event Feedback</h1>
+                <p class="lead">Provide your valuable feedback for college events to help us improve.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-4">Upcoming & Recent Events</h2>
+
+{% if events %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for event in events %}
+            <div class="col">
+                <div class="card h-100 shadow-sm event-card">
+                    {% if event.image %}
+                        <div class="event-image-container">
+                            <img src="{{ event.image.url }}" class="card-img-top event-image" alt="{{ event.name }}">
+                        </div>
+                    {% endif %}
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">{{ event.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <i class="fas fa-calendar-alt me-2"></i> {{ event.date }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt me-2"></i> {{ event.venue }}
+                        </p>
+                        <div class="card-text mb-3">
+                            <h6>Highlights:</h6>
+                            <p>{{ event.highlights|linebreaks }}</p>
+                        </div>
+                        <a href="{{ event.form_link }}" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-comment me-2"></i>Provide Feedback
+                        </a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Added on {{ event.created_at|date:"F d, Y" }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>No events available at the moment. Please check back later.
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}College Event Feedback System{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        // Check for saved theme preference or use preferred color scheme
+        const getPreferredTheme = () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                return storedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        // Apply theme
+        const setTheme = (theme) => {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+        };
+
+        // Set theme on load
+        setTheme(getPreferredTheme());
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fas fa-graduation-cap me-2"></i>College Event Feedback
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation" title="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Manager Login</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-light ms-2" id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
+                            <i class="fas fa-moon" id="dark-icon"></i>
+                            <i class="fas fa-sun d-none" id="light-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="container mt-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>College Event Feedback System</h5>
+                    <p>A secure platform for collecting and analyzing event feedback.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h5>Contact Us</h5>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="https://www.facebook.com/profile.php?id=100078471831879" class="footer-link" title="Facebook" aria-label="Facebook" target="_blank" rel="noopener"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="https://x.com/GlaUniversity" class="footer-link" title="X (Twitter)" aria-label="X (Twitter)" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="https://www.instagram.com/glauniv/" class="footer-link" title="Instagram" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://www.linkedin.com/school/gla-university/posts/?feedView=all" class="footer-link" title="LinkedIn" aria-label="LinkedIn" target="_blank" rel="noopener"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p>&copy; {% now "Y" %} College Event Feedback. All rights reserved.</p>
+                    <p>Made with <i class="fas fa-heart text-danger"></i> by <a href="https://www.linkedin.com/in/aryan-gupta-383587315/" target="_blank" rel="noopener" class="creator-link">Aryan</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Theme toggler functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('dark-icon');
+            const lightIcon = document.getElementById('light-icon');
+
+            // Update icons based on current theme
+            const updateIcons = (theme) => {
+                if (theme === 'dark') {
+                    darkIcon.classList.add('d-none');
+                    lightIcon.classList.remove('d-none');
+                } else {
+                    darkIcon.classList.remove('d-none');
+                    lightIcon.classList.add('d-none');
+                }
+            };
+
+            // Initialize icons
+            updateIcons(getPreferredTheme());
+
+            // Toggle theme on click
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+                updateIcons(newTheme);
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

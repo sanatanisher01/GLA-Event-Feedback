@@ -1,0 +1,98 @@
+{% extends 'events/base.html' %}
+
+{% block title %}{{ action }} Event{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    {% if action == 'Add' %}
+                        <i class="fas fa-calendar-plus me-2"></i>Add New Event
+                    {% else %}
+                        <i class="fas fa-edit me-2"></i>Edit Event: {{ event.name }}
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Event Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger">
+                                {{ form.name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.date.id_for_label }}" class="form-label">Event Date</label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <div class="text-danger">
+                                {{ form.date.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.venue.id_for_label }}" class="form-label">Venue</label>
+                        {{ form.venue }}
+                        {% if form.venue.errors %}
+                            <div class="text-danger">
+                                {{ form.venue.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.highlights.id_for_label }}" class="form-label">Highlights</label>
+                        {{ form.highlights }}
+                        {% if form.highlights.errors %}
+                            <div class="text-danger">
+                                {{ form.highlights.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Enter key highlights of the event, one per line.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.form_link.id_for_label }}" class="form-label">Google Form Link</label>
+                        {{ form.form_link }}
+                        {% if form.form_link.errors %}
+                            <div class="text-danger">
+                                {{ form.form_link.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Enter the full URL to the Google Form for collecting feedback.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Event Image</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="text-danger">
+                                {{ form.image.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Upload an image for the event (optional).</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Save Event
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
