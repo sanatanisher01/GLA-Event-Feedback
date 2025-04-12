@@ -5,99 +5,264 @@
 
 {% block extra_css %}
 <style>
+    /* Main Container */
     .confirm-delete-container {
         max-width: 800px;
         margin: 2rem auto;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         background-color: var(--bs-body-bg);
-    }
-    
-    .confirm-header {
-        text-align: center;
-        margin-bottom: 2rem;
+        overflow: hidden;
         position: relative;
     }
-    
+
+    /* Header Section with Gradient */
+    .confirm-header {
+        text-align: center;
+        padding: 3rem 2rem 2rem;
+        position: relative;
+        background: linear-gradient(135deg, #ff4d4d, #ff1a1a);
+        color: white;
+        overflow: hidden;
+    }
+
+    /* Pattern Overlay for Header */
+    .confirm-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.2;
+    }
+
+    /* Animated Delete Icon */
     .confirm-icon {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
         border-radius: 50%;
-        background-color: rgba(var(--bs-danger-rgb), 0.1);
+        background-color: rgba(255, 255, 255, 0.15);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1.5rem;
+        position: relative;
         animation: pulseDelete 2s infinite;
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.05);
     }
-    
+
     @keyframes pulseDelete {
-        0% { box-shadow: 0 0 0 0 rgba(var(--bs-danger-rgb), 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(var(--bs-danger-rgb), 0); }
-        100% { box-shadow: 0 0 0 0 rgba(var(--bs-danger-rgb), 0); }
+        0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4), 0 0 0 10px rgba(255, 255, 255, 0.05); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0), 0 0 0 10px rgba(255, 255, 255, 0.05); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 10px rgba(255, 255, 255, 0.05); }
     }
-    
+
+    /* Delete Icon */
     .confirm-icon i {
-        font-size: 2.5rem;
-        color: var(--bs-danger);
+        font-size: 3rem;
+        color: white;
+        animation: shake 5s ease-in-out infinite;
+        transform-origin: center;
     }
-    
+
+    @keyframes shake {
+        0%, 80%, 100% { transform: rotate(0); }
+        85% { transform: rotate(-10deg); }
+        90% { transform: rotate(10deg); }
+        95% { transform: rotate(-5deg); }
+    }
+
+    /* Header Text */
     .confirm-title {
-        font-size: 1.75rem;
+        font-size: 2.25rem;
         font-weight: 700;
-        color: var(--bs-danger);
         margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    
+
     .confirm-subtitle {
-        font-size: 1.1rem;
-        color: var(--bs-secondary);
-        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0;
     }
-    
+
+    /* Content Section */
+    .confirm-content {
+        padding: 2rem;
+    }
+
+    /* Event Details Card */
     .event-details {
         background-color: rgba(var(--bs-light-rgb), 0.5);
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 2rem;
-        border-left: 4px solid var(--bs-primary);
+        border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .event-details::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--bs-primary), rgba(var(--bs-primary-rgb), 0.5));
+    }
+
     [data-bs-theme="dark"] .event-details {
         background-color: rgba(255, 255, 255, 0.05);
     }
-    
-    .event-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
+
+    /* Event Image */
+    .event-image-container {
+        position: relative;
+        margin-bottom: 1.5rem;
         border-radius: 8px;
-        margin-bottom: 1rem;
-        border: 3px solid rgba(var(--bs-danger-rgb), 0.1);
+        overflow: hidden;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
-    
-    .warning-box {
-        background-color: rgba(var(--bs-warning-rgb), 0.1);
-        border-left: 4px solid var(--bs-warning);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
+
+    .event-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
     }
-    
-    .warning-box i {
-        color: var(--bs-warning);
+
+    .event-image-container:hover .event-image {
+        transform: scale(1.03);
+    }
+
+    .event-image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        color: white;
+    }
+
+    /* Event Details Text */
+    .event-details h2 {
+        color: var(--bs-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .event-detail-item {
+        display: flex;
+        margin-bottom: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .event-detail-icon {
+        color: var(--bs-primary);
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+        margin-top: 0.2rem;
+    }
+
+    .event-detail-text {
+        flex: 1;
+    }
+
+    .event-detail-label {
+        font-weight: 600;
         margin-right: 0.5rem;
     }
-    
+
+    /* Warning Box */
+    .warning-box {
+        background-color: rgba(var(--bs-warning-rgb), 0.1);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(var(--bs-warning-rgb), 0.2);
+    }
+
+    .warning-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--bs-warning), rgba(var(--bs-warning-rgb), 0.5));
+    }
+
+    .warning-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: var(--bs-warning);
+    }
+
+    .warning-header i {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+    }
+
+    .warning-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* CSV List */
+    .csv-list {
+        margin-top: 1rem;
+        list-style-type: none;
+        padding-left: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        border-radius: 8px;
+        border: 1px solid rgba(var(--bs-secondary-rgb), 0.1);
+    }
+
+    .csv-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(var(--bs-secondary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        transition: background-color 0.2s ease;
+    }
+
+    .csv-item:last-child {
+        border-bottom: none;
+    }
+
+    .csv-item:hover {
+        background-color: rgba(var(--bs-secondary-rgb), 0.05);
+    }
+
+    .csv-item i {
+        margin-right: 0.75rem;
+        color: var(--bs-primary);
+        font-size: 1.1rem;
+    }
+
+    /* Action Buttons */
     .action-buttons {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         gap: 1rem;
         margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(var(--bs-secondary-rgb), 0.1);
     }
-    
+
+    /* Cancel Button */
     .cancel-btn {
         padding: 0.75rem 1.5rem;
         border-radius: 8px;
@@ -111,14 +276,16 @@
         color: var(--bs-body-color);
         border: none;
         min-width: 140px;
+        text-decoration: none;
     }
-    
+
     .cancel-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         background-color: var(--bs-secondary-bg-subtle);
     }
-    
+
+    /* Delete Button */
     .delete-btn {
         padding: 0.75rem 1.5rem;
         border-radius: 8px;
@@ -132,42 +299,106 @@
         color: white;
         border: none;
         min-width: 140px;
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .delete-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.7s ease;
+    }
+
     .delete-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(var(--bs-danger-rgb), 0.4);
         background-color: #d32f2f;
     }
-    
-    .csv-list {
-        margin-top: 1rem;
-        list-style-type: none;
-        padding-left: 0;
+
+    .delete-btn:hover::before {
+        left: 100%;
     }
-    
+
+    /* Animation Classes */
+    .confirm-delete-container {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .confirm-delete-container.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     .csv-item {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(var(--bs-secondary-rgb), 0.1);
-        display: flex;
-        align-items: center;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
     }
-    
-    .csv-item i {
-        margin-right: 0.75rem;
-        color: var(--bs-primary);
+
+    .csv-item.visible {
+        opacity: 1;
+        transform: translateX(0);
     }
-    
+
+    .csv-item.hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+
+    .event-image-container.hover .event-image {
+        transform: scale(1.05);
+    }
+
+    .delete-btn.processing {
+        background-color: #c62828;
+    }
+
+    .delete-btn.hover-effect::before {
+        left: 100%;
+    }
+
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {
         .confirm-delete-container {
             margin: 1rem;
+            border-radius: 12px;
+        }
+
+        .confirm-header {
+            padding: 2rem 1.5rem 1.5rem;
+        }
+
+        .confirm-icon {
+            width: 90px;
+            height: 90px;
+        }
+
+        .confirm-icon i {
+            font-size: 2.5rem;
+        }
+
+        .confirm-title {
+            font-size: 1.75rem;
+        }
+
+        .confirm-content {
             padding: 1.5rem;
         }
-        
-        .action-buttons {
-            flex-direction: column;
+
+        .event-image {
+            height: 200px;
         }
-        
+
+        .action-buttons {
+            flex-direction: column-reverse;
+        }
+
         .cancel-btn, .delete-btn {
             width: 100%;
         }
@@ -177,6 +408,7 @@
 
 {% block content %}
 <div class="confirm-delete-container">
+    <!-- Header Section with Gradient Background -->
     <div class="confirm-header">
         <div class="confirm-icon">
             <i class="fas fa-trash-alt"></i>
@@ -184,43 +416,80 @@
         <h1 class="confirm-title">Delete Event</h1>
         <p class="confirm-subtitle">Are you sure you want to delete this event?</p>
     </div>
-    
-    <div class="event-details">
-        {% if event.image %}
-            <img src="{{ event.image.url }}" alt="{{ event.name }}" class="event-image">
-        {% endif %}
-        
-        <h2>{{ event.name }}</h2>
-        <p><strong>Date:</strong> {{ event.date }}</p>
-        <p><strong>Location:</strong> {{ event.location }}</p>
-        <p><strong>Description:</strong> {{ event.description }}</p>
-    </div>
-    
-    {% if csv_count > 0 %}
-        <div class="warning-box">
-            <p><i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> This event has {{ csv_count }} associated CSV file{{ csv_count|pluralize }}. Deleting this event will also delete all associated CSV files.</p>
-            
-            <ul class="csv-list">
-                {% for csv in csv_files %}
-                    <li class="csv-item">
-                        <i class="fas fa-file-csv"></i> {{ csv.get_filename }}
-                    </li>
-                {% endfor %}
-            </ul>
+
+    <!-- Main Content Section -->
+    <div class="confirm-content">
+        <!-- Event Details Card -->
+        <div class="event-details">
+            {% if event.image %}
+                <div class="event-image-container">
+                    <img src="{{ event.image.url }}" alt="{{ event.name }}" class="event-image">
+                    <div class="event-image-overlay">
+                        <h3>{{ event.name }}</h3>
+                    </div>
+                </div>
+            {% endif %}
+
+            <h2>{{ event.name }}</h2>
+
+            <div class="event-detail-item">
+                <div class="event-detail-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="event-detail-text">
+                    <span class="event-detail-label">Date:</span>
+                    <span>{{ event.date }}</span>
+                </div>
+            </div>
+
+            <div class="event-detail-item">
+                <div class="event-detail-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="event-detail-text">
+                    <span class="event-detail-label">Location:</span>
+                    <span>{{ event.location }}</span>
+                </div>
+            </div>
+
+            <div class="event-detail-item">
+                <div class="event-detail-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="event-detail-text">
+                    <span class="event-detail-label">Description:</span>
+                    <span>{{ event.description }}</span>
+                </div>
+            </div>
         </div>
-    {% endif %}
-    
-    <div class="action-buttons">
-        <a href="{% url 'dashboard' %}" class="cancel-btn">
-            <i class="fas fa-arrow-left"></i> Cancel
-        </a>
-        
-        <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm">
-            {% csrf_token %}
-            <button type="submit" class="delete-btn" id="confirmDelete">
-                <i class="fas fa-trash-alt"></i> Delete Event
-            </button>
-        </form>
+
+        <!-- Warning Box for Associated CSV Files -->
+        {% if csv_count > 0 %}
+            <div class="warning-box">
+                <div class="warning-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4 class="warning-title">Warning: Associated Data Will Be Deleted</h4>
+                </div>
+
+                <p>This event has <strong>{{ csv_count }}</strong> associated CSV file{{ csv_count|pluralize }}. Deleting this event will permanently remove all associated data and visualizations.</p>
+
+                <ul class="csv-list">{% for csv in csv_files %}<li class="csv-item"><i class="fas fa-file-csv"></i> {{ csv.get_filename }}</li>{% endfor %}</ul>
+            </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{% url 'dashboard' %}" class="cancel-btn">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+
+            <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm">
+                {% csrf_token %}
+                <button type="submit" class="delete-btn" id="confirmDelete">
+                    <i class="fas fa-trash-alt"></i> Delete Event
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -228,15 +497,82 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const deleteForm = document.getElementById('deleteForm');
-        const deleteButton = document.getElementById('confirmDelete');
-        
-        if (deleteForm) {
-            deleteForm.addEventListener('submit', function() {
-                deleteButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Deleting...';
-                deleteButton.disabled = true;
+        // Handle delete form submission with animations
+        const setupDeleteForm = () => {
+            const deleteForm = document.getElementById('deleteForm');
+            const deleteButton = document.getElementById('confirmDelete');
+
+            if (deleteForm && deleteButton) {
+                // Add hover effect to delete button
+                deleteButton.addEventListener('mouseenter', function() {
+                    this.classList.add('hover-effect');
+                });
+
+                deleteButton.addEventListener('mouseleave', function() {
+                    this.classList.remove('hover-effect');
+                });
+
+                // Handle form submission
+                deleteForm.addEventListener('submit', function(e) {
+                    // Show loading state
+                    deleteButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Deleting...';
+                    deleteButton.disabled = true;
+                    deleteButton.classList.add('processing');
+
+                    // Add slight delay for visual feedback
+                    setTimeout(() => {
+                        // Let the form submit normally
+                        return true;
+                    }, 300);
+                });
+            }
+        };
+
+        // Add animation to CSV list items
+        const setupCSVListAnimations = () => {
+            const csvItems = document.querySelectorAll('.csv-item');
+
+            csvItems.forEach((item, index) => {
+                // Add staggered fade-in animation
+                setTimeout(() => {
+                    item.classList.add('visible');
+                }, 100 * index);
+
+                // Add hover effect
+                item.addEventListener('mouseenter', function() {
+                    this.classList.add('hover');
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    this.classList.remove('hover');
+                });
             });
-        }
+        };
+
+        // Add animation to event image
+        const setupImageAnimation = () => {
+            const imageContainer = document.querySelector('.event-image-container');
+
+            if (imageContainer) {
+                imageContainer.addEventListener('mouseenter', function() {
+                    this.classList.add('hover');
+                });
+
+                imageContainer.addEventListener('mouseleave', function() {
+                    this.classList.remove('hover');
+                });
+            }
+        };
+
+        // Initialize all animations and interactions
+        setupDeleteForm();
+        setupCSVListAnimations();
+        setupImageAnimation();
+
+        // Add entrance animation to the container
+        setTimeout(() => {
+            document.querySelector('.confirm-delete-container').classList.add('visible');
+        }, 100);
     });
 </script>
 {% endblock %}
