@@ -467,6 +467,8 @@
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         animation: modalFadeIn 0.3s ease-out;
+        margin: 0 auto;
+        max-width: 95%;
     }
 
     @keyframes modalFadeIn {
@@ -476,6 +478,33 @@
 
     .modal-backdrop.show {
         opacity: 0.7;
+    }
+
+    .modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+
+    .modal-sm {
+        max-width: 300px;
+    }
+
+    @media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 500px;
+            margin: 1.75rem auto;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .modal-dialog {
+            margin: 0.5rem;
+            width: auto;
+        }
+
+        .modal-content {
+            max-width: 100%;
+        }
     }
 
     .modal-header {
@@ -517,8 +546,8 @@
     }
 
     .delete-icon-container {
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         background-color: rgba(var(--bs-danger-rgb), 0.1);
         display: flex;
@@ -527,6 +556,17 @@
         margin: 0 auto 1.5rem;
         position: relative;
         animation: pulseDelete 2s infinite;
+    }
+
+    @media (max-width: 575.98px) {
+        .delete-icon-container {
+            width: 60px;
+            height: 60px;
+        }
+
+        .delete-icon {
+            font-size: 1.75rem;
+        }
     }
 
     @keyframes pulseDelete {
@@ -789,7 +829,7 @@
                                                     <ul class="dropdown-menu">
                                                         {% for csv in csv_files %}
                                                             <li>
-                                                                <div class="dropdown-item">
+                                                                <a class="dropdown-item" href="javascript:void(0);">
                                                                     <div class="dropdown-item-content">
                                                                         <span>{{ csv.get_filename }}</span>
                                                                         <div class="dropdown-item-actions">
@@ -801,7 +841,7 @@
                                                                             </a>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                </a>
                                                             </li>
                                                         {% endfor %}
                                                     </ul>
@@ -823,8 +863,8 @@
                                         </div>
 
                                         <!-- Delete Modal -->
-                                        <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm modal-md-lg">
                                                 <div class="modal-content">
                                                     <div class="modal-header danger">
                                                         <h5 class="modal-title" id="deleteModalLabel{{ event.id }}">
@@ -925,6 +965,8 @@
                     <ul class="dropdown-menu">
                         {% for event in events %}
                             <li><a class="dropdown-item" href="{% url 'upload_csv' event.id %}">{{ event.name }}</a></li>
+                        {% empty %}
+                            <li><a class="dropdown-item disabled" href="#">No events available</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -948,6 +990,8 @@
                     <ul class="dropdown-menu">
                         {% for csv in csv_files %}
                             <li><a class="dropdown-item" href="{% url 'visualize_data' csv.id %}">{{ csv.event.name }} - {{ csv.get_filename }}</a></li>
+                        {% empty %}
+                            <li><a class="dropdown-item disabled" href="#">No CSV files available</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -964,6 +1008,36 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Fix for modal backdrop issue
+        const fixBackdropIssue = () => {
+            const body = document.body;
+            const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+
+            // Remove extra backdrops if more than one exists
+            if (modalBackdrops.length > 1) {
+                for (let i = 1; i < modalBackdrops.length; i++) {
+                    modalBackdrops[i].remove();
+                }
+            }
+
+            // Ensure body has proper classes
+            if (document.querySelector('.modal.show')) {
+                body.classList.add('modal-open');
+            } else {
+                body.classList.remove('modal-open');
+                body.style.paddingRight = '';
+            }
+        };
+
+        // Handle delete button clicks
+        const deleteActionButtons = document.querySelectorAll('.action-btn.delete');
+        deleteActionButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Fix any existing modal issues before showing new modal
+                fixBackdropIssue();
+            });
+        });
+
         // Handle delete form submissions with animation
         const deleteButtons = document.querySelectorAll('[id^="confirmDelete"]');
 
@@ -979,27 +1053,36 @@
                     button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Deleting...';
                     button.disabled = true;
 
-                    // Add fade-out animation to modal
-                    const modalId = button.closest('.modal').id;
-                    const modalElement = document.getElementById(modalId);
-                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    try {
+                        // Add fade-out animation to modal
+                        const modalId = button.closest('.modal').id;
+                        const modalElement = document.getElementById(modalId);
+                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
-                    // Add a slight delay for visual feedback before closing modal
-                    setTimeout(() => {
-                        modalInstance.hide();
+                        // Add a slight delay for visual feedback before closing modal
+                        setTimeout(() => {
+                            modalInstance.hide();
 
-                        // Submit the form after modal is hidden
+                            // Submit the form after modal is hidden
+                            setTimeout(() => {
+                                this.submit();
+                            }, 300);
+                        }, 700);
+                    } catch (error) {
+                        console.error('Error handling modal:', error);
+                        // Fallback: just submit the form if there's an error with the modal
                         setTimeout(() => {
                             this.submit();
-                        }, 300);
-                    }, 700);
+                        }, 500);
+                    }
                 });
             }
         });
 
-        // Add shake animation to delete icon on modal show
+        // Handle modal show events
         const deleteModals = document.querySelectorAll('.modal');
         deleteModals.forEach(modal => {
+            // Reset animation when modal is shown
             modal.addEventListener('shown.bs.modal', function() {
                 const iconContainer = this.querySelector('.delete-icon-container');
                 if (iconContainer) {
@@ -1008,8 +1091,19 @@
                         iconContainer.style.animation = '';
                     }, 10);
                 }
+
+                // Fix backdrop issues
+                fixBackdropIssue();
+            });
+
+            // Fix issues when modal is hidden
+            modal.addEventListener('hidden.bs.modal', function() {
+                fixBackdropIssue();
             });
         });
+
+        // Fix any existing modal issues on page load
+        fixBackdropIssue();
     });
 </script>
 {% endblock %}
