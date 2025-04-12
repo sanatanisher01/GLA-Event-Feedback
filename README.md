@@ -16,61 +16,54 @@ A secure full-stack web application for college event feedback using Django. The
 - Download CSV
 - Automatically generate visual graphs (bar, pie, line, scatter, box plots, heatmaps) from CSV feedback
 
-## Deployment Instructions for PythonAnywhere
+## Deployment Instructions for Render
 
-### 1. Create a PythonAnywhere Account
-- Go to [PythonAnywhere](https://www.pythonanywhere.com/) and sign up for a free account
+### 1. Create a Render Account
+- Go to [Render](https://render.com/) and sign up for a free account
+- Connect your GitHub account to Render
 
-### 2. Upload Your Code
-- From the Dashboard, go to the "Files" tab
-- Create a new directory for your project: `mkdir feedback_system`
-- Upload your project files using the "Upload a file" button or via Git
+### 2. Create a PostgreSQL Database
+- In the Render dashboard, click on "New" and select "PostgreSQL"
+- Give your database a name (e.g., `feedback-system-db`)
+- Choose the free plan
+- Click "Create Database"
+- Note the Internal Database URL - you'll need this for your web service
 
-### 3. Set Up a Virtual Environment
+### 3. Create a Web Service
+- In the Render dashboard, click on "New" and select "Web Service"
+- Connect your GitHub repository
+- Give your service a name (e.g., `gla-event-feedback`)
+- Set the Environment to "Python 3"
+- Set the Build Command to `./build.sh`
+- Set the Start Command to `gunicorn feedback_system.wsgi:application`
+
+### 4. Configure Environment Variables
+- In the web service settings, go to the "Environment" tab
+- Add the following environment variables:
+  - `DATABASE_URL`: Your Internal Database URL from step 2
+  - `SECRET_KEY`: A secure random string for Django
+  - `DJANGO_SETTINGS_MODULE`: `feedback_system.render_settings`
+  - `PYTHON_VERSION`: `3.9.0` (or your preferred version)
+
+### 5. Deploy Your Service
+- Click "Create Web Service"
+- Render will automatically build and deploy your application
+- The build process will:
+  - Install dependencies
+  - Collect static files
+  - Run database migrations
+
+### 6. Create Default Admin User (Optional)
+- After deployment, go to the "Shell" tab in your web service
+- Run the following command to create the default admin user:
 ```bash
-# Create a virtual environment
-mkvirtualenv --python=python3.9 feedback_env
-
-# Activate the virtual environment
-workon feedback_env
-
-# Install dependencies
-pip install -r requirements.txt
+python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('Ankurrai@gla', 'admin@example.com', 'AnkurRai@010GLA')"
 ```
 
-### 4. Configure MySQL Database
-- Go to the "Databases" tab
-- Create a new MySQL database
-- Update the database settings in `feedback_system/production_settings.py`
+### 7. Access Your Application
+- Your application will be available at `https://your-service-name.onrender.com`
+- You can set up a custom domain in the "Settings" tab if needed
 
-### 5. Configure WSGI File
-- Go to the "Web" tab
-- Click "Add a new web app"
-- Select "Manual configuration" and "Python 3.9"
-- Set the path to your WSGI file: `/home/yourusername/feedback_system/wsgi_pythonanywhere.py`
-- Edit the WSGI file to match your project path
-
-### 6. Configure Static Files
-- In the "Web" tab, under "Static files"
-- Add:
-  - URL: `/static/`
-  - Directory: `/home/yourusername/feedback_system/staticfiles/`
-- Add:
-  - URL: `/media/`
-  - Directory: `/home/yourusername/feedback_system/media/`
-
-### 7. Collect Static Files and Migrate Database
-```bash
-python manage.py collectstatic --settings=feedback_system.production_settings
-python manage.py migrate --settings=feedback_system.production_settings
-```
-
-### 8. Create Superuser (if needed)
-```bash
-python manage.py createsuperuser --settings=feedback_system.production_settings
-```
-
-### 9. Reload Web App
-- Click the "Reload" button in the "Web" tab
-
-Your application should now be live at `yourusername.pythonanywhere.com`
+### 8. Monitoring and Logs
+- Render provides logs and metrics for your application
+- You can view them in the "Logs" tab of your web service
