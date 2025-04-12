@@ -140,10 +140,20 @@ def delete_event(request, event_id):
             # Then delete the event
             event.delete()
             messages.success(request, f'Event "{event_name}" deleted successfully!')
-            return redirect('dashboard')
+
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return HttpResponse(status=200)
+            else:
+                return redirect('dashboard')
         except Exception as e:
             messages.error(request, f'Error deleting event: {str(e)}')
-            return redirect('dashboard')
+
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return HttpResponse(status=500)
+            else:
+                return redirect('dashboard')
 
     # For GET requests, show confirmation page
     return render(request, 'events/delete_event.html', {'event': event})
