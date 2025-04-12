@@ -21,33 +21,49 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Add whitenoise middleware for static files
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
-# Add Cloudinary to INSTALLED_APPS
-INSTALLED_APPS += [
-    'cloudinary',
-    'cloudinary_storage',
-]
+# Try to add Cloudinary to INSTALLED_APPS if available
+try:
+    import cloudinary
+    import cloudinary.uploader
+    import cloudinary_storage
 
-# Cloudinary configuration
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
-}
+    # Cloudinary is available, add it to INSTALLED_APPS
+    INSTALLED_APPS += [
+        'cloudinary',
+        'cloudinary_storage',
+    ]
 
-# Fallback to local storage if Cloudinary credentials are not set
-if not all([CLOUDINARY_STORAGE['CLOUD_NAME'], CLOUDINARY_STORAGE['API_KEY'], CLOUDINARY_STORAGE['API_SECRET']]):
-    print('WARNING: Cloudinary credentials not set. Using local storage.')
-    # Remove cloudinary from INSTALLED_APPS if credentials are not set
-    INSTALLED_APPS.remove('cloudinary')
-    INSTALLED_APPS.remove('cloudinary_storage')
-    # Use local storage instead
+    # Cloudinary configuration
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
+    }
+
+    # Check if credentials are set
+    if all([CLOUDINARY_STORAGE['CLOUD_NAME'], CLOUDINARY_STORAGE['API_KEY'], CLOUDINARY_STORAGE['API_SECRET']]):
+        # Media files configuration with Cloudinary
+        DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+        MEDIA_URL = '/media/'
+        print('INFO: Cloudinary configured successfully.')
+    else:
+        # Fallback to local storage if credentials are not set
+        print('WARNING: Cloudinary credentials not set. Using local storage.')
+        # Use local storage instead
+        MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+        MEDIA_URL = '/media/'
+        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+        # Remove cloudinary from INSTALLED_APPS if credentials are not set
+        INSTALLED_APPS.remove('cloudinary')
+        INSTALLED_APPS.remove('cloudinary_storage')
+
+except ImportError:
+    # Cloudinary is not available, use local storage
+    print('WARNING: Cloudinary package not installed. Using local storage.')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-else:
-    # Media files configuration with Cloudinary
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = '/media/'
 
 # Security settings
 CSRF_COOKIE_SECURE = True

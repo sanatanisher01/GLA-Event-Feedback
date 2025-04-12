@@ -1,7 +1,21 @@
 from django.db import models
 from django.utils import timezone
 import os
-from cloudinary.models import CloudinaryField
+
+# Try to import CloudinaryField, but provide a fallback if it fails
+try:
+    from cloudinary.models import CloudinaryField
+    CLOUDINARY_AVAILABLE = True
+except ImportError:
+    # Create a dummy CloudinaryField that just uses ImageField
+    CLOUDINARY_AVAILABLE = False
+    class CloudinaryField(models.ImageField):
+        def __init__(self, *args, **kwargs):
+            # Remove Cloudinary-specific arguments
+            for key in ['folder', 'transformation', 'format', 'resource_type']:
+                if key in kwargs:
+                    del kwargs[key]
+            super().__init__(*args, **kwargs)
 
 # Create your models here.
 
@@ -16,13 +30,12 @@ class Event(models.Model):
     highlights = models.TextField()
     form_link = models.URLField()
     # Use CloudinaryField for images in production, fallback to ImageField in development
-    try:
+    if CLOUDINARY_AVAILABLE:
         image = CloudinaryField('image', folder='event_images', blank=True, null=True,
                              transformation={'quality': 'auto:good', 'fetch_format': 'auto'},
                              format='jpg')
-    except Exception as e:
-        print(f"CloudinaryField error: {str(e)}")
-        # Fallback to standard ImageField if Cloudinary is not configured
+    else:
+        # Fallback to standard ImageField if Cloudinary is not available
         image = models.ImageField(upload_to=event_image_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -37,11 +50,10 @@ def csv_file_path(instance, filename):
 class CSVFile(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='csv_files')
     # Use CloudinaryField for files in production, fallback to FileField in development
-    try:
+    if CLOUDINARY_AVAILABLE:
         file = CloudinaryField('raw', folder='csv_files', resource_type='raw', blank=False, null=False)
-    except Exception as e:
-        print(f"CloudinaryField error: {str(e)}")
-        # Fallback to standard FileField if Cloudinary is not configured
+    else:
+        # Fallback to standard FileField if Cloudinary is not available
         file = models.FileField(upload_to=csv_file_path)
     upload_date = models.DateTimeField(default=timezone.now)
     description = models.CharField(max_length=255, blank=True)

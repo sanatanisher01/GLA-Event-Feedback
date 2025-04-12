@@ -48,12 +48,45 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     try:
-        events = Event.objects.all().order_by('-date')
-        return render(request, 'events/dashboard.html', {'events': events})
+        # Add detailed logging
+        print("Starting dashboard view")
+        print(f"User: {request.user.username}")
+
+        # Try to get events with detailed error tracking
+        try:
+            print("Querying events...")
+            events = Event.objects.all().order_by('-date')
+            print(f"Found {len(events)} events")
+        except Exception as event_error:
+            print(f"Error querying events: {str(event_error)}")
+            print(f"Error type: {type(event_error).__name__}")
+            raise
+
+        # Try to render the template with detailed error tracking
+        try:
+            print("Rendering dashboard template...")
+            # Try the simplified template first to diagnose issues
+            response = render(request, 'events/dashboard_simple.html', {'events': events})
+            print("Dashboard template rendered successfully")
+            return response
+        except Exception as template_error:
+            print(f"Error rendering template: {str(template_error)}")
+            print(f"Error type: {type(template_error).__name__}")
+            raise
+
     except Exception as e:
-        # Log the error
+        # Log the error with traceback
+        import traceback
         print(f"Dashboard error: {str(e)}")
-        messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
+        print(f"Error type: {type(e).__name__}")
+        print("Traceback:")
+        traceback.print_exc()
+
+        # Show a more detailed error message in development
+        if request.get_host() == '127.0.0.1:8080':
+            messages.error(request, f"Dashboard error: {str(e)}")
+        else:
+            messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
         return redirect('index')
 
 @login_required
