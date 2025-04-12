@@ -119,12 +119,27 @@ def edit_event(request, event_id):
     return render(request, 'events/add_event_modern.html', {'form': form, 'event': event, 'action': 'Edit'})
 
 @login_required
+def confirm_delete(request, event_id):
+    """View to show delete confirmation page"""
+    # Get the event or return 404
+    event = get_object_or_404(Event, id=event_id)
+
+    # Get associated CSV files
+    csv_files = CSVFile.objects.filter(event=event)
+
+    # Render the confirmation page
+    return render(request, 'events/confirm_delete.html', {
+        'event': event,
+        'csv_files': csv_files,
+        'csv_count': csv_files.count()
+    })
+
+@login_required
 def delete_event(request, event_id):
-    """Simple view to handle event deletion"""
+    """Handle actual event deletion"""
     # Only allow POST requests for deletion
     if request.method != 'POST':
-        messages.error(request, 'Invalid request method for deletion.')
-        return redirect('dashboard')
+        return redirect('confirm_delete', event_id=event_id)
 
     # Get the event or return 404
     try:
@@ -153,11 +168,8 @@ def delete_event(request, event_id):
         # Add success message
         messages.success(request, f'Event "{event_name}" deleted successfully!')
 
-        # Return appropriate response based on request type
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return HttpResponse(status=200)
-        else:
-            return redirect('dashboard')
+        # Redirect to dashboard
+        return redirect('dashboard')
 
     except Exception as e:
         # Log the error
@@ -166,11 +178,8 @@ def delete_event(request, event_id):
         # Add error message
         messages.error(request, f'Error deleting event: {str(e)}')
 
-        # Return appropriate response based on request type
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return HttpResponse(status=500)
-        else:
-            return redirect('dashboard')
+        # Redirect back to confirmation page
+        return redirect('confirm_delete', event_id=event_id)
 
 @login_required
 def upload_csv(request, event_id):

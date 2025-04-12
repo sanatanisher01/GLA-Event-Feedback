@@ -963,64 +963,13 @@
                                                 <i class="fas fa-upload"></i>
                                                 <span class="visually-hidden">Upload CSV</span>
                                             </a>
-                                            <button type="button" class="action-btn delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}" title="Delete Event" aria-label="Delete Event">
+                                            <a href="{% url 'confirm_delete' event.id %}" class="action-btn delete" title="Delete Event" aria-label="Delete Event">
                                                 <i class="fas fa-trash-alt"></i>
                                                 <span class="visually-hidden">Delete Event</span>
-                                            </button>
+                                            </a>
                                         </div>
 
-                                        <!-- Delete Modal -->
-                                        <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm modal-md-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header danger">
-                                                        <h5 class="modal-title" id="deleteModalLabel{{ event.id }}">
-                                                            <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
-                                                        </h5>
-                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="text-center mb-4">
-                                                            <div class="delete-icon-container">
-                                                                <i class="fas fa-trash-alt delete-icon"></i>
-                                                            </div>
-                                                            <h4 class="mb-3">Delete Event</h4>
-                                                            <p class="mb-1">Are you sure you want to delete the event:</p>
-                                                            <h5 class="text-danger mb-3">"{{ event.name }}"</h5>
-                                                            <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
-                                                        </div>
 
-                                                        {% if event.image %}
-                                                            <div class="text-center mb-4">
-                                                                <img src="{{ event.image.url }}" alt="{{ event.name }}" class="img-fluid rounded delete-preview-image">
-                                                            </div>
-                                                        {% endif %}
-
-                                                        {% with csv_count=event.csvfile_set.count %}
-                                                            {% if csv_count > 0 %}
-                                                                <div class="delete-warning">
-                                                                    <i class="fas fa-exclamation-circle"></i>
-                                                                    <div>
-                                                                        <strong>Warning:</strong> This will also delete {{ csv_count }} CSV file{{ csv_count|pluralize }} and all associated visualizations.
-                                                                    </div>
-                                                                </div>
-                                                            {% endif %}
-                                                        {% endwith %}
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">
-                                                            <i class="fas fa-times"></i>Cancel
-                                                        </button>
-                                                        <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm{{ event.id }}" class="direct-submit-form">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="delete-btn" id="confirmDelete{{ event.id }}">
-                                                                <i class="fas fa-trash-alt"></i>Delete Event
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             {% endfor %}
