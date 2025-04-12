@@ -47,17 +47,31 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    events = Event.objects.all().order_by('-date')
-    return render(request, 'events/dashboard.html', {'events': events})
+    try:
+        events = Event.objects.all().order_by('-date')
+        return render(request, 'events/dashboard.html', {'events': events})
+    except Exception as e:
+        # Log the error
+        print(f"Dashboard error: {str(e)}")
+        messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
+        return redirect('index')
 
 @login_required
 def add_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Event added successfully!')
-            return redirect('dashboard')
+            try:
+                event = form.save(commit=False)
+                # Handle image upload separately to catch Cloudinary errors
+                if 'image' in request.FILES:
+                    event.image = request.FILES['image']
+                event.save()
+                messages.success(request, 'Event added successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+                print(f"Event creation error: {str(e)}")
+                messages.error(request, f"Error saving event: {str(e)}")
     else:
         form = EventForm()
     return render(request, 'events/add_event.html', {'form': form, 'action': 'Add'})
@@ -68,9 +82,17 @@ def edit_event(request, event_id):
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Event updated successfully!')
-            return redirect('dashboard')
+            try:
+                updated_event = form.save(commit=False)
+                # Handle image upload separately to catch Cloudinary errors
+                if 'image' in request.FILES:
+                    updated_event.image = request.FILES['image']
+                updated_event.save()
+                messages.success(request, 'Event updated successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+                print(f"Event update error: {str(e)}")
+                messages.error(request, f"Error updating event: {str(e)}")
     else:
         form = EventForm(instance=event)
     return render(request, 'events/add_event.html', {'form': form, 'event': event, 'action': 'Edit'})
@@ -91,11 +113,18 @@ def upload_csv(request, event_id):
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            csv_file = form.save(commit=False)
-            csv_file.event = event
-            csv_file.save()
-            messages.success(request, 'CSV file uploaded successfully!')
-            return redirect('dashboard')
+            try:
+                csv_file = form.save(commit=False)
+                csv_file.event = event
+                # Handle file upload separately to catch Cloudinary errors
+                if 'file' in request.FILES:
+                    csv_file.file = request.FILES['file']
+                csv_file.save()
+                messages.success(request, 'CSV file uploaded successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+                print(f"CSV upload error: {str(e)}")
+                messages.error(request, f"Error uploading CSV: {str(e)}")
     else:
         form = CSVUploadForm()
     return render(request, 'events/upload_csv.html', {'form': form, 'event': event})

@@ -16,7 +16,14 @@ class Event(models.Model):
     highlights = models.TextField()
     form_link = models.URLField()
     # Use CloudinaryField for images in production, fallback to ImageField in development
-    image = CloudinaryField('image', folder='event_images', blank=True, null=True)
+    try:
+        image = CloudinaryField('image', folder='event_images', blank=True, null=True,
+                             transformation={'quality': 'auto:good', 'fetch_format': 'auto'},
+                             format='jpg')
+    except Exception as e:
+        print(f"CloudinaryField error: {str(e)}")
+        # Fallback to standard ImageField if Cloudinary is not configured
+        image = models.ImageField(upload_to=event_image_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,7 +37,12 @@ def csv_file_path(instance, filename):
 class CSVFile(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='csv_files')
     # Use CloudinaryField for files in production, fallback to FileField in development
-    file = CloudinaryField('raw', folder='csv_files', resource_type='raw', blank=False, null=False)
+    try:
+        file = CloudinaryField('raw', folder='csv_files', resource_type='raw', blank=False, null=False)
+    except Exception as e:
+        print(f"CloudinaryField error: {str(e)}")
+        # Fallback to standard FileField if Cloudinary is not configured
+        file = models.FileField(upload_to=csv_file_path)
     upload_date = models.DateTimeField(default=timezone.now)
     description = models.CharField(max_length=255, blank=True)
 
