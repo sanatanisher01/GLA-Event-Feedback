@@ -4,8 +4,17 @@ from django.contrib.auth import authenticate
 from .models import Event, CSVFile
 
 class CustomAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Username',
+        'autocomplete': 'username',
+        'autofocus': True
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Password',
+        'autocomplete': 'current-password'
+    }))
 
     def clean(self):
         username = self.cleaned_data.get('username')
@@ -38,12 +47,31 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = ['name', 'date', 'venue', 'highlights', 'form_link', 'image']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'venue': forms.TextInput(attrs={'class': 'form-control'}),
-            'highlights': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'form_link': forms.URLInput(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Event Name'
+            }),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'venue': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Event Venue'
+            }),
+            'highlights': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Key highlights of the event'
+            }),
+            'form_link': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://forms.google.com/...'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
         }
 
 class CSVUploadForm(forms.ModelForm):
@@ -51,6 +79,12 @@ class CSVUploadForm(forms.ModelForm):
         model = CSVFile
         fields = ['file', 'description']
         widgets = {
-            'file': forms.FileInput(attrs={'class': 'form-control'}),
-            'description': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Brief description of this data'}),
+            'file': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.csv'
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Brief description of this data'
+            }),
         }

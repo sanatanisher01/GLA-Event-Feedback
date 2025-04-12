@@ -1,0 +1,372 @@
+{% extends 'events/base_modern.html' %}
+
+{% block title %}GLA Event Feedback - Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        padding: 4rem 2rem;
+        margin-bottom: 3rem;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://res.cloudinary.com/dxgbphyhj/image/upload/v1712950000/pattern_bg_rvzwxl.svg');
+        background-size: cover;
+        opacity: 0.1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-weight: 300;
+        margin-bottom: 2rem;
+        font-size: 1.25rem;
+    }
+    
+    .section-title {
+        position: relative;
+        margin-bottom: 2rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .event-card {
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: all var(--transition-speed);
+        box-shadow: var(--box-shadow);
+        height: 100%;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .event-image-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .event-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .event-card:hover .event-image {
+        transform: scale(1.1);
+    }
+    
+    .event-date-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    }
+    
+    .card-header {
+        border-bottom: none;
+        padding: 1.25rem 1.25rem 0.5rem;
+        background-color: transparent;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .card-footer {
+        background-color: transparent;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.25rem;
+    }
+    
+    .event-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        color: #6c757d;
+    }
+    
+    .event-meta i {
+        width: 20px;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .highlights-section {
+        background-color: rgba(0, 0, 0, 0.02);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.25rem;
+    }
+    
+    .highlights-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .highlights-content {
+        font-size: 0.9rem;
+        max-height: 100px;
+        overflow: hidden;
+        position: relative;
+        transition: max-height 0.5s ease;
+    }
+    
+    .highlights-content.expanded {
+        max-height: 1000px;
+    }
+    
+    .read-more {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(to left, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0));
+        padding: 0 0.5rem;
+        font-size: 0.8rem;
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+    
+    .feedback-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .feedback-btn i {
+        margin-right: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .feedback-btn:hover i {
+        transform: translateX(3px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: var(--border-radius);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .event-placeholder {
+        height: 200px;
+        background-color: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .event-placeholder i {
+        font-size: 3rem;
+        color: rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .event-placeholder {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-bs-theme="dark"] .event-placeholder i {
+        color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .highlights-section {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-bs-theme="dark"] .read-more {
+        background: linear-gradient(to left, rgba(33, 37, 41, 1) 50%, rgba(33, 37, 41, 0));
+    }
+    
+    [data-bs-theme="dark"] .empty-state {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 3rem 1.5rem;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .event-image-container {
+            height: 180px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" data-aos="fade-up">
+    <div class="hero-content text-white">
+        <h1 class="hero-title">GLA Event Feedback System</h1>
+        <p class="hero-subtitle">Provide your valuable feedback for university events to help us improve and create better experiences.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-shield me-2"></i>Manager Login
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Events Section -->
+<h2 class="section-title" data-aos="fade-up">Upcoming & Recent Events</h2>
+
+{% if events %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% for event in events %}
+            <div class="col" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                <div class="event-card">
+                    {% if event.image %}
+                        <div class="event-image-container">
+                            <div class="event-date-badge">
+                                <i class="fas fa-calendar-day me-1"></i>{{ event.date|date:"M d" }}
+                            </div>
+                            <img src="{{ event.image.url }}" class="event-image" alt="{{ event.name }}">
+                        </div>
+                    {% else %}
+                        <div class="event-placeholder">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-header">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="event-meta">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{{ event.date }}</span>
+                        </div>
+                        <div class="event-meta">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ event.venue }}</span>
+                        </div>
+                        <div class="highlights-section">
+                            <div class="highlights-title">
+                                <i class="fas fa-star me-1"></i>Highlights
+                            </div>
+                            <div class="highlights-content" id="highlights-{{ event.id }}">
+                                {{ event.highlights|linebreaks }}
+                                {% if event.highlights|length > 100 %}
+                                    <span class="read-more" onclick="expandHighlights('highlights-{{ event.id }}')">Read more</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if event.form_link %}
+                            <a href="{{ event.form_link }}" target="_blank" class="btn btn-primary feedback-btn">
+                                <i class="fas fa-comment"></i>Provide Feedback
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary feedback-btn" disabled>
+                                <i class="fas fa-comment"></i>Feedback Not Available
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small><i class="fas fa-clock me-1"></i>Added on {{ event.created_at|date:"F d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state" data-aos="fade-up">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No Events Available</h3>
+        <p>There are no events available at the moment. Please check back later for upcoming events and opportunities to provide feedback.</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function expandHighlights(id) {
+        const element = document.getElementById(id);
+        element.classList.toggle('expanded');
+        
+        const readMore = element.querySelector('.read-more');
+        if (readMore) {
+            if (element.classList.contains('expanded')) {
+                readMore.textContent = 'Read less';
+            } else {
+                readMore.textContent = 'Read more';
+            }
+        }
+    }
+</script>
+{% endblock %}

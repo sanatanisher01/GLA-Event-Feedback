@@ -18,7 +18,7 @@ from .forms import CustomAuthenticationForm, EventForm, CSVUploadForm
 
 def index(request):
     events = Event.objects.all().order_by('-date')
-    return render(request, 'events/index.html', {'events': events})
+    return render(request, 'events/index_modern.html', {'events': events})
 
 def login_view(request):
     if request.method == 'POST':
@@ -37,7 +37,7 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     else:
         form = CustomAuthenticationForm()
-    return render(request, 'events/login.html', {'form': form})
+    return render(request, 'events/login_modern.html', {'form': form})
 
 @login_required
 def logout_view(request):
