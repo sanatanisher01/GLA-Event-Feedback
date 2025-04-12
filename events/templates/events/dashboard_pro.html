@@ -8,7 +8,7 @@
     .dashboard-wrapper {
         padding: 1.5rem 0;
     }
-    
+
     .dashboard-header {
         margin-bottom: 2rem;
         display: flex;
@@ -17,14 +17,14 @@
         flex-wrap: wrap;
         gap: 1rem;
     }
-    
+
     .dashboard-title {
         font-weight: 700;
         margin-bottom: 0.25rem;
         position: relative;
         display: inline-block;
     }
-    
+
     .dashboard-title::after {
         content: '';
         position: absolute;
@@ -34,12 +34,12 @@
         height: 3px;
         background-color: var(--primary-color);
     }
-    
+
     .dashboard-subtitle {
         color: #6c757d;
         margin-top: 0.75rem;
     }
-    
+
     /* Stats Cards */
     .stats-grid {
         display: grid;
@@ -47,7 +47,7 @@
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
+
     .stat-card {
         background-color: #fff;
         border-radius: 12px;
@@ -60,24 +60,24 @@
         overflow: hidden;
         border-left: 4px solid transparent;
     }
-    
+
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
-    
+
     .stat-card.primary {
         border-left-color: var(--primary-color);
     }
-    
+
     .stat-card.success {
         border-left-color: var(--success-color);
     }
-    
+
     .stat-card.info {
         border-left-color: var(--info-color);
     }
-    
+
     .stat-icon {
         width: 60px;
         height: 60px;
@@ -88,33 +88,33 @@
         margin-right: 1rem;
         flex-shrink: 0;
     }
-    
+
     .stat-icon.primary {
         background-color: rgba(var(--bs-primary-rgb), 0.1);
         color: var(--primary-color);
     }
-    
+
     .stat-icon.success {
         background-color: rgba(var(--bs-success-rgb), 0.1);
         color: var(--success-color);
     }
-    
+
     .stat-icon.info {
         background-color: rgba(var(--bs-info-rgb), 0.1);
         color: var(--info-color);
     }
-    
+
     .stat-content h3 {
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 0.25rem;
     }
-    
+
     .stat-content p {
         color: #6c757d;
         margin-bottom: 0;
     }
-    
+
     .stat-card::before {
         content: '';
         position: absolute;
@@ -125,7 +125,7 @@
         background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
         opacity: 0.2;
     }
-    
+
     /* Section Headers */
     .section-header {
         display: flex;
@@ -135,19 +135,19 @@
         padding-bottom: 0.75rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
-    
+
     .section-title {
         font-weight: 600;
         margin-bottom: 0;
         display: flex;
         align-items: center;
     }
-    
+
     .section-title i {
         margin-right: 0.75rem;
         color: var(--primary-color);
     }
-    
+
     /* Content Cards */
     .content-card {
         background-color: #fff;
@@ -158,11 +158,11 @@
         transition: all 0.3s ease;
         border: none;
     }
-    
+
     .content-card:hover {
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     }
-    
+
     .card-header-custom {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         color: white;
@@ -172,7 +172,7 @@
         position: relative;
         overflow: hidden;
     }
-    
+
     .card-header-custom::before {
         content: '';
         position: absolute;
@@ -184,7 +184,7 @@
         background-size: cover;
         opacity: 0.1;
     }
-    
+
     .card-header-custom h4 {
         margin-bottom: 0;
         position: relative;
@@ -192,16 +192,16 @@
         display: flex;
         align-items: center;
     }
-    
+
     .card-header-custom h4 i {
         margin-right: 0.75rem;
     }
-    
+
     /* Table Styling */
     .custom-table {
         margin-bottom: 0;
     }
-    
+
     .custom-table thead th {
         background-color: rgba(0, 0, 0, 0.02);
         font-weight: 600;
@@ -211,31 +211,31 @@
         padding: 1rem 1.5rem;
         border: none;
     }
-    
+
     .custom-table tbody td {
         padding: 1.25rem 1.5rem;
         vertical-align: middle;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
-    
+
     .custom-table tbody tr:last-child td {
         border-bottom: none;
     }
-    
+
     .custom-table tbody tr {
         transition: all 0.2s ease;
     }
-    
+
     .custom-table tbody tr:hover {
         background-color: rgba(0, 0, 0, 0.01);
     }
-    
+
     /* Event Item */
     .event-item {
         display: flex;
         align-items: center;
     }
-    
+
     .event-img {
         width: 60px;
         height: 60px;
@@ -244,7 +244,7 @@
         margin-right: 1rem;
         flex-shrink: 0;
     }
-    
+
     .event-img-placeholder {
         width: 60px;
         height: 60px;
@@ -256,17 +256,17 @@
         margin-right: 1rem;
         flex-shrink: 0;
     }
-    
+
     .event-img-placeholder i {
         color: rgba(0, 0, 0, 0.2);
         font-size: 1.5rem;
     }
-    
+
     .event-details h6 {
         font-weight: 600;
         margin-bottom: 0.25rem;
     }
-    
+
     .event-details p {
         color: #6c757d;
         margin-bottom: 0;
@@ -277,7 +277,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     /* Badge Styling */
     .badge-custom {
         padding: 0.5rem 0.75rem;
@@ -285,18 +285,18 @@
         font-weight: 500;
         font-size: 0.75rem;
     }
-    
+
     .badge-csv {
         background-color: rgba(var(--bs-info-rgb), 0.1);
         color: var(--info-color);
     }
-    
+
     /* Action Buttons */
     .action-btns {
         display: flex;
         gap: 0.5rem;
     }
-    
+
     .action-btn {
         width: 36px;
         height: 36px;
@@ -309,24 +309,24 @@
         border: none;
         cursor: pointer;
     }
-    
+
     .action-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-    
+
     .action-btn.edit {
         background-color: var(--warning-color);
     }
-    
+
     .action-btn.upload {
         background-color: var(--primary-color);
     }
-    
+
     .action-btn.delete {
         background-color: var(--danger-color);
     }
-    
+
     /* Quick Actions */
     .quick-actions-grid {
         display: grid;
@@ -334,7 +334,7 @@
         gap: 1.5rem;
         margin-bottom: 1rem;
     }
-    
+
     .action-card {
         background-color: #fff;
         border-radius: 12px;
@@ -344,12 +344,12 @@
         transition: all 0.3s ease;
         height: 100%;
     }
-    
+
     .action-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     }
-    
+
     .action-icon {
         width: 80px;
         height: 80px;
@@ -359,33 +359,33 @@
         justify-content: center;
         margin: 0 auto 1.5rem;
     }
-    
+
     .action-icon.primary {
         background-color: rgba(var(--bs-primary-rgb), 0.1);
         color: var(--primary-color);
     }
-    
+
     .action-icon.success {
         background-color: rgba(var(--bs-success-rgb), 0.1);
         color: var(--success-color);
     }
-    
+
     .action-icon.info {
         background-color: rgba(var(--bs-info-rgb), 0.1);
         color: var(--info-color);
     }
-    
+
     .action-card h5 {
         font-weight: 600;
         margin-bottom: 0.75rem;
     }
-    
+
     .action-card p {
         color: #6c757d;
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
     }
-    
+
     /* Dropdown Styling */
     .dropdown-menu {
         border: none;
@@ -393,32 +393,32 @@
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         padding: 0.5rem;
     }
-    
+
     .dropdown-item {
         border-radius: 6px;
         padding: 0.5rem 0.75rem;
         transition: all 0.2s ease;
     }
-    
+
     .dropdown-item:hover {
         background-color: rgba(var(--bs-primary-rgb), 0.05);
     }
-    
+
     .dropdown-item-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    
+
     .dropdown-item-content span {
         font-size: 0.875rem;
     }
-    
+
     .dropdown-item-actions {
         display: flex;
         gap: 0.25rem;
     }
-    
+
     .dropdown-action-btn {
         width: 28px;
         height: 28px;
@@ -431,120 +431,254 @@
         color: #6c757d;
         border: none;
     }
-    
+
     .dropdown-action-btn:hover {
         background-color: rgba(var(--bs-primary-rgb), 0.1);
         color: var(--primary-color);
     }
-    
+
     /* Empty State */
     .empty-state {
         padding: 3rem 2rem;
         text-align: center;
     }
-    
+
     .empty-state i {
         font-size: 3rem;
         color: #d1d1d1;
         margin-bottom: 1.5rem;
     }
-    
+
     .empty-state h5 {
         font-weight: 600;
         margin-bottom: 1rem;
     }
-    
+
     .empty-state p {
         color: #6c757d;
         max-width: 500px;
         margin: 0 auto 1.5rem;
     }
-    
+
     /* Modal Styling */
     .modal-content {
         border: none;
         border-radius: 12px;
         overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: modalFadeIn 0.3s ease-out;
     }
-    
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.7;
+    }
+
     .modal-header {
         border-bottom: none;
         padding: 1.5rem;
     }
-    
+
     .modal-header.danger {
         background: linear-gradient(135deg, #f44336, #d32f2f);
         color: white;
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .modal-header.danger::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://res.cloudinary.com/dxgbphyhj/image/upload/v1712950000/pattern_bg_rvzwxl.svg');
+        background-size: cover;
+        opacity: 0.1;
+    }
+
+    .modal-title {
+        position: relative;
+        z-index: 1;
+    }
+
     .modal-body {
         padding: 1.5rem;
     }
-    
+
     .modal-footer {
         border-top: none;
         padding: 1rem 1.5rem 1.5rem;
     }
-    
+
+    .delete-icon-container {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background-color: rgba(var(--bs-danger-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        position: relative;
+        animation: pulseDelete 2s infinite;
+    }
+
+    @keyframes pulseDelete {
+        0% { box-shadow: 0 0 0 0 rgba(var(--bs-danger-rgb), 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(var(--bs-danger-rgb), 0); }
+        100% { box-shadow: 0 0 0 0 rgba(var(--bs-danger-rgb), 0); }
+    }
+
+    .delete-icon {
+        font-size: 2.5rem;
+        color: var(--danger-color);
+    }
+
+    .delete-warning {
+        background-color: rgba(var(--bs-warning-rgb), 0.1);
+        border-left: 4px solid var(--warning-color);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .delete-warning i {
+        color: var(--warning-color);
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+        margin-top: 0.125rem;
+    }
+
+    .delete-preview-image {
+        max-height: 150px;
+        object-fit: cover;
+        border: 3px solid rgba(var(--bs-danger-rgb), 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .delete-btn {
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .delete-btn:hover {
+        background-color: #c62828;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(var(--bs-danger-rgb), 0.3);
+    }
+
+    .delete-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .cancel-btn {
+        background-color: transparent;
+        color: #6c757d;
+        border: 1px solid #6c757d;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .cancel-btn:hover {
+        background-color: #f8f9fa;
+        color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .cancel-btn i {
+        margin-right: 0.5rem;
+    }
+
+    [data-bs-theme="dark"] .modal-content {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-bs-theme="dark"] .delete-warning {
+        background-color: rgba(var(--bs-warning-rgb), 0.2);
+    }
+
+    [data-bs-theme="dark"] .cancel-btn:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
     /* Dark Mode Adjustments */
     [data-bs-theme="dark"] .stat-card,
     [data-bs-theme="dark"] .content-card,
     [data-bs-theme="dark"] .action-card {
         background-color: #2d3748;
     }
-    
+
     [data-bs-theme="dark"] .custom-table thead th {
         background-color: rgba(255, 255, 255, 0.05);
     }
-    
+
     [data-bs-theme="dark"] .custom-table tbody tr:hover {
         background-color: rgba(255, 255, 255, 0.03);
     }
-    
+
     [data-bs-theme="dark"] .event-img-placeholder {
         background-color: rgba(255, 255, 255, 0.1);
     }
-    
+
     [data-bs-theme="dark"] .event-img-placeholder i {
         color: rgba(255, 255, 255, 0.2);
     }
-    
+
     [data-bs-theme="dark"] .dropdown-action-btn {
         background-color: rgba(255, 255, 255, 0.1);
         color: #adb5bd;
     }
-    
+
     [data-bs-theme="dark"] .dropdown-action-btn:hover {
         background-color: rgba(var(--bs-primary-rgb), 0.2);
     }
-    
+
     [data-bs-theme="dark"] .custom-table tbody td {
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
+
     [data-bs-theme="dark"] .section-header {
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
+
     /* Responsive Adjustments */
     @media (max-width: 768px) {
         .dashboard-header {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .stats-grid, .quick-actions-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .custom-table {
             min-width: 800px;
         }
-        
+
         .table-responsive {
             margin: 0 -1px;
         }
-        
+
         .action-btns {
             flex-wrap: wrap;
         }
@@ -564,7 +698,7 @@
             <i class="fas fa-plus me-2"></i>Add New Event
         </a>
     </div>
-    
+
     <!-- Stats Cards -->
     <div class="stats-grid" data-aos="fade-up" data-aos-delay="100">
         <div class="stat-card primary">
@@ -595,7 +729,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Events Management -->
     <div class="content-card" data-aos="fade-up" data-aos-delay="200">
         <div class="card-header-custom">
@@ -687,7 +821,7 @@
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
-                                        
+
                                         <!-- Delete Modal -->
                                         <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
@@ -700,28 +834,40 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="text-center mb-4">
-                                                            <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mb-3" style="width: 80px; height: 80px;">
-                                                                <i class="fas fa-trash-alt fa-2x"></i>
+                                                            <div class="delete-icon-container">
+                                                                <i class="fas fa-trash-alt delete-icon"></i>
                                                             </div>
+                                                            <h4 class="mb-3">Delete Event</h4>
+                                                            <p class="mb-1">Are you sure you want to delete the event:</p>
+                                                            <h5 class="text-danger mb-3">"{{ event.name }}"</h5>
+                                                            <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
                                                         </div>
-                                                        <p class="text-center">Are you sure you want to delete the event <strong>{{ event.name }}</strong>?</p>
-                                                        <p class="text-center text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
-                                                        
+
+                                                        {% if event.image %}
+                                                            <div class="text-center mb-4">
+                                                                <img src="{{ event.image.url }}" alt="{{ event.name }}" class="img-fluid rounded delete-preview-image">
+                                                            </div>
+                                                        {% endif %}
+
                                                         {% with csv_count=event.csvfile_set.count %}
                                                             {% if csv_count > 0 %}
-                                                                <div class="alert alert-warning">
-                                                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                                                    <strong>Warning:</strong> This will also delete {{ csv_count }} CSV file{{ csv_count|pluralize }} and all associated visualizations.
+                                                                <div class="delete-warning">
+                                                                    <i class="fas fa-exclamation-circle"></i>
+                                                                    <div>
+                                                                        <strong>Warning:</strong> This will also delete {{ csv_count }} CSV file{{ csv_count|pluralize }} and all associated visualizations.
+                                                                    </div>
                                                                 </div>
                                                             {% endif %}
                                                         {% endwith %}
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <form method="POST" action="{% url 'delete_event' event.id %}">
+                                                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">
+                                                            <i class="fas fa-times"></i>Cancel
+                                                        </button>
+                                                        <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm{{ event.id }}">
                                                             {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger">
-                                                                <i class="fas fa-trash-alt me-2"></i>Delete Event
+                                                            <button type="submit" class="delete-btn" id="confirmDelete{{ event.id }}">
+                                                                <i class="fas fa-trash-alt"></i>Delete Event
                                                             </button>
                                                         </form>
                                                     </div>
@@ -746,14 +892,14 @@
             {% endif %}
         </div>
     </div>
-    
+
     <!-- Quick Actions -->
     <div class="section-header" data-aos="fade-up" data-aos-delay="300">
         <h4 class="section-title">
             <i class="fas fa-bolt"></i>Quick Actions
         </h4>
     </div>
-    
+
     <div class="quick-actions-grid" data-aos="fade-up" data-aos-delay="400">
         <div class="action-card">
             <div class="action-icon primary">
@@ -813,4 +959,57 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle delete form submissions with animation
+        const deleteButtons = document.querySelectorAll('[id^="confirmDelete"]');
+
+        deleteButtons.forEach(button => {
+            const formId = button.id.replace('confirmDelete', 'deleteForm');
+            const deleteForm = document.getElementById(formId);
+
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // Change button text and add spinner
+                    button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Deleting...';
+                    button.disabled = true;
+
+                    // Add fade-out animation to modal
+                    const modalId = button.closest('.modal').id;
+                    const modalElement = document.getElementById(modalId);
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+                    // Add a slight delay for visual feedback before closing modal
+                    setTimeout(() => {
+                        modalInstance.hide();
+
+                        // Submit the form after modal is hidden
+                        setTimeout(() => {
+                            this.submit();
+                        }, 300);
+                    }, 700);
+                });
+            }
+        });
+
+        // Add shake animation to delete icon on modal show
+        const deleteModals = document.querySelectorAll('.modal');
+        deleteModals.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function() {
+                const iconContainer = this.querySelector('.delete-icon-container');
+                if (iconContainer) {
+                    iconContainer.style.animation = 'none';
+                    setTimeout(() => {
+                        iconContainer.style.animation = '';
+                    }, 10);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
