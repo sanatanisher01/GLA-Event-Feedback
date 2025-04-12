@@ -45,6 +45,14 @@ try:
         # Media files configuration with Cloudinary
         DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
         MEDIA_URL = '/media/'
+
+        # Initialize Cloudinary
+        cloudinary.config(
+            cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+            api_key=CLOUDINARY_STORAGE['API_KEY'],
+            api_secret=CLOUDINARY_STORAGE['API_SECRET'],
+            secure=True
+        )
         print('INFO: Cloudinary configured successfully.')
     else:
         # Fallback to local storage if credentials are not set

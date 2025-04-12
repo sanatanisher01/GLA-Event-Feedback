@@ -65,8 +65,8 @@ def dashboard(request):
         # Try to render the template with detailed error tracking
         try:
             print("Rendering dashboard template...")
-            # Try the simplified template first to diagnose issues
-            response = render(request, 'events/dashboard_simple.html', {'events': events})
+            # Use the full dashboard template now that Cloudinary is configured
+            response = render(request, 'events/dashboard.html', {'events': events})
             print("Dashboard template rendered successfully")
             return response
         except Exception as template_error:
