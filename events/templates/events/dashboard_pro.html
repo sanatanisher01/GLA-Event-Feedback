@@ -385,40 +385,7 @@
         border: 0;
     }
 
-    /* Loading Overlay */
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
-    }
 
-    .loading-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .spinner-container {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    [data-bs-theme="dark"] .spinner-container {
-        background-color: var(--bs-dark);
-        color: white;
-    }
 
     /* Quick Actions */
     .quick-actions-grid {
@@ -866,14 +833,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Loading Overlay -->
-<div id="loadingOverlay" class="loading-overlay">
-    <div class="spinner-container">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2">Processing...</p>
-    </div>
-</div>
-
 <div class="dashboard-wrapper">
     <!-- Dashboard Header -->
     <div class="dashboard-header" data-aos="fade-up">
@@ -1052,7 +1011,7 @@
                                                         <button type="button" class="cancel-btn" data-bs-dismiss="modal">
                                                             <i class="fas fa-times"></i>Cancel
                                                         </button>
-                                                        <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm{{ event.id }}">
+                                                        <form method="POST" action="{% url 'delete_event' event.id %}" id="deleteForm{{ event.id }}" class="direct-submit-form">
                                                             {% csrf_token %}
                                                             <button type="submit" class="delete-btn" id="confirmDelete{{ event.id }}">
                                                                 <i class="fas fa-trash-alt"></i>Delete Event
@@ -1144,135 +1103,90 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Fix for modal backdrop issue
-        const fixBackdropIssue = () => {
-            const body = document.body;
-            const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+        // Simple function to handle direct form submission
+        const setupDirectFormSubmission = () => {
+            // Get all direct submit forms
+            const directSubmitForms = document.querySelectorAll('.direct-submit-form');
 
-            // Remove extra backdrops if more than one exists
-            if (modalBackdrops.length > 1) {
-                for (let i = 1; i < modalBackdrops.length; i++) {
-                    modalBackdrops[i].remove();
-                }
-            }
+            directSubmitForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Don't prevent default - let the form submit normally
+                    // Just show a loading indicator
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+                        submitButton.disabled = true;
+                    }
 
-            // Ensure body has proper classes
-            if (document.querySelector('.modal.show')) {
-                body.classList.add('modal-open');
-            } else {
-                body.classList.remove('modal-open');
-                body.style.paddingRight = '';
-            }
+                    // Close any open modals
+                    const modal = this.closest('.modal');
+                    if (modal) {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+
+                    // Let the form submit normally
+                    return true;
+                });
+            });
         };
 
-        // Handle delete button clicks
-        const deleteActionButtons = document.querySelectorAll('.action-btn.delete');
-        deleteActionButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Fix any existing modal issues before showing new modal
-                fixBackdropIssue();
-            });
-        });
+        // Handle modal backdrop issues
+        const setupModalBackdropFix = () => {
+            const fixBackdropIssue = () => {
+                const body = document.body;
+                const modalBackdrops = document.querySelectorAll('.modal-backdrop');
 
-        // Handle delete form submissions with animation and fetch API
-        const deleteButtons = document.querySelectorAll('[id^="confirmDelete"]');
-
-        deleteButtons.forEach(button => {
-            const formId = button.id.replace('confirmDelete', 'deleteForm');
-            const deleteForm = document.getElementById(formId);
-
-            if (deleteForm) {
-                deleteForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
-                    // Change button text and add spinner
-                    button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Deleting...';
-                    button.disabled = true;
-
-                    // Get form data and URL
-                    const formData = new FormData(this);
-                    const url = this.getAttribute('action');
-
-                    try {
-                        // Add fade-out animation to modal
-                        const modalId = button.closest('.modal').id;
-                        const modalElement = document.getElementById(modalId);
-                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-                        // Hide modal first
-                        modalInstance.hide();
-
-                        // Show loading overlay
-                        const loadingOverlay = document.getElementById('loadingOverlay');
-                        loadingOverlay.classList.add('active');
-
-                        // Use fetch API to submit the form asynchronously
-                        fetch(url, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            credentials: 'same-origin'
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                // Add a slight delay for better UX
-                                setTimeout(() => {
-                                    if (response.redirected) {
-                                        window.location.href = response.url;
-                                    } else {
-                                        window.location.href = '/dashboard/';
-                                    }
-                                }, 500);
-                            } else {
-                                throw new Error('Server responded with an error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error during fetch operation:', error);
-                            // Hide loading overlay
-                            loadingOverlay.classList.remove('active');
-                            // Show error message
-                            alert('An error occurred while deleting the event. Please try again.');
-                            // Re-enable the button
-                            button.disabled = false;
-                            button.innerHTML = '<i class="fas fa-trash-alt"></i>Delete Event';
-                        });
-                    } catch (error) {
-                        console.error('Error handling modal:', error);
-                        // Fallback: use traditional form submission if there's an error
-                        this.submit();
+                // Remove extra backdrops if more than one exists
+                if (modalBackdrops.length > 1) {
+                    for (let i = 1; i < modalBackdrops.length; i++) {
+                        modalBackdrops[i].remove();
                     }
-                });
-            }
-        });
-
-        // Handle modal show events
-        const deleteModals = document.querySelectorAll('.modal');
-        deleteModals.forEach(modal => {
-            // Reset animation when modal is shown
-            modal.addEventListener('shown.bs.modal', function() {
-                const iconContainer = this.querySelector('.delete-icon-container');
-                if (iconContainer) {
-                    iconContainer.style.animation = 'none';
-                    setTimeout(() => {
-                        iconContainer.style.animation = '';
-                    }, 10);
                 }
 
-                // Fix backdrop issues
-                fixBackdropIssue();
+                // Ensure body has proper classes
+                if (document.querySelector('.modal.show')) {
+                    body.classList.add('modal-open');
+                } else {
+                    body.classList.remove('modal-open');
+                    body.style.paddingRight = '';
+                }
+            };
+
+            // Fix backdrop issues when modals are shown or hidden
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.addEventListener('shown.bs.modal', fixBackdropIssue);
+                modal.addEventListener('hidden.bs.modal', fixBackdropIssue);
             });
 
-            // Fix issues when modal is hidden
-            modal.addEventListener('hidden.bs.modal', function() {
-                fixBackdropIssue();
-            });
-        });
+            // Fix any existing issues on page load
+            fixBackdropIssue();
+        };
 
-        // Fix any existing modal issues on page load
-        fixBackdropIssue();
+        // Handle delete icon animation
+        const setupDeleteIconAnimation = () => {
+            const deleteModals = document.querySelectorAll('.modal');
+            deleteModals.forEach(modal => {
+                modal.addEventListener('shown.bs.modal', function() {
+                    const iconContainer = this.querySelector('.delete-icon-container');
+                    if (iconContainer) {
+                        // Reset animation
+                        iconContainer.style.animation = 'none';
+                        setTimeout(() => {
+                            iconContainer.style.animation = '';
+                        }, 10);
+                    }
+                });
+            });
+        };
+
+        // Initialize all functionality
+        setupDirectFormSubmission();
+        setupModalBackdropFix();
+        setupDeleteIconAnimation();
     });
 </script>
 {% endblock %}

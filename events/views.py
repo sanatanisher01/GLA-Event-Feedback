@@ -120,43 +120,57 @@ def edit_event(request, event_id):
 
 @login_required
 def delete_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
+    """Simple view to handle event deletion"""
+    # Only allow POST requests for deletion
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method for deletion.')
+        return redirect('dashboard')
 
-    if request.method == 'POST':
-        # Get associated CSV files to delete them first (to avoid orphaned files)
+    # Get the event or return 404
+    try:
+        event = Event.objects.get(id=event_id)
+    except Event.DoesNotExist:
+        messages.error(request, 'Event not found.')
+        return redirect('dashboard')
+
+    # Store event name for success message
+    event_name = event.name
+
+    try:
+        # Get associated CSV files
         csv_files = CSVFile.objects.filter(event=event)
 
-        # Store event name before deletion for success message
-        event_name = event.name
+        # Delete associated CSV files first
+        for csv_file in csv_files:
+            try:
+                csv_file.delete()
+            except Exception as csv_error:
+                print(f"Error deleting CSV file {csv_file.id}: {str(csv_error)}")
 
-        try:
-            # Delete associated CSV files first
-            for csv_file in csv_files:
-                try:
-                    csv_file.delete()
-                except Exception as csv_error:
-                    print(f"Error deleting CSV file {csv_file.id}: {str(csv_error)}")
+        # Then delete the event
+        event.delete()
 
-            # Then delete the event
-            event.delete()
-            messages.success(request, f'Event "{event_name}" deleted successfully!')
+        # Add success message
+        messages.success(request, f'Event "{event_name}" deleted successfully!')
 
-            # Check if this is an AJAX request
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return HttpResponse(status=200)
-            else:
-                return redirect('dashboard')
-        except Exception as e:
-            messages.error(request, f'Error deleting event: {str(e)}')
+        # Return appropriate response based on request type
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return HttpResponse(status=200)
+        else:
+            return redirect('dashboard')
 
-            # Check if this is an AJAX request
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return HttpResponse(status=500)
-            else:
-                return redirect('dashboard')
+    except Exception as e:
+        # Log the error
+        print(f"Error deleting event {event_id}: {str(e)}")
 
-    # For GET requests, show confirmation page
-    return render(request, 'events/delete_event.html', {'event': event})
+        # Add error message
+        messages.error(request, f'Error deleting event: {str(e)}')
+
+        # Return appropriate response based on request type
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return HttpResponse(status=500)
+        else:
+            return redirect('dashboard')
 
 @login_required
 def upload_csv(request, event_id):
