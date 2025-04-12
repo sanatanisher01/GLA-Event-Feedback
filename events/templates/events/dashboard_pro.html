@@ -308,6 +308,8 @@
         color: white;
         border: none;
         cursor: pointer;
+        position: relative;
+        overflow: hidden;
     }
 
     .action-btn:hover {
@@ -315,16 +317,72 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
+    .action-btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+
+    .action-btn:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        20% {
+            transform: scale(25, 25);
+            opacity: 0.3;
+        }
+        100% {
+            opacity: 0;
+            transform: scale(40, 40);
+        }
+    }
+
     .action-btn.edit {
         background-color: var(--warning-color);
+    }
+
+    .action-btn.edit:hover {
+        background-color: #e69500;
     }
 
     .action-btn.upload {
         background-color: var(--primary-color);
     }
 
+    .action-btn.upload:hover {
+        background-color: #3a56d4;
+    }
+
     .action-btn.delete {
         background-color: var(--danger-color);
+    }
+
+    .action-btn.delete:hover {
+        background-color: #d32f2f;
+    }
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
     }
 
     /* Quick Actions */
@@ -701,6 +759,7 @@
     }
 
     /* Responsive Adjustments */
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {
         .dashboard-header {
             flex-direction: column;
@@ -717,10 +776,55 @@
 
         .table-responsive {
             margin: 0 -1px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(var(--bs-primary-rgb), 0.5) transparent;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(var(--bs-primary-rgb), 0.5);
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: rgba(var(--bs-primary-rgb), 0.7);
+        }
+
+        [data-bs-theme="dark"] .table-responsive::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-bs-theme="dark"] .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(var(--bs-primary-rgb), 0.6);
         }
 
         .action-btns {
             flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .event-img, .event-img-placeholder {
+            width: 50px;
+            height: 50px;
+        }
+
+        .event-details h6 {
+            font-size: 0.9rem;
+        }
+
+        .event-details p {
+            font-size: 0.8rem;
+            -webkit-line-clamp: 1;
         }
     }
 </style>
@@ -826,39 +930,40 @@
                                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                         View
                                                     </button>
-                                                    <ul class="dropdown-menu">
-                                                        {% for csv in csv_files %}
-                                                            <li>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
+                                                    <ul class="dropdown-menu">{% for csv in csv_files %}<li>
+                                                                <a class="dropdown-item" href="javascript:void(0);" title="{{ csv.get_filename }}" aria-label="{{ csv.get_filename }}">
                                                                     <div class="dropdown-item-content">
                                                                         <span>{{ csv.get_filename }}</span>
                                                                         <div class="dropdown-item-actions">
-                                                                            <a href="{% url 'view_csv' csv.id %}" class="dropdown-action-btn" title="View CSV Data">
+                                                                            <a href="{% url 'view_csv' csv.id %}" class="dropdown-action-btn" title="View CSV Data" aria-label="View CSV Data">
                                                                                 <i class="fas fa-table"></i>
+                                                                                <span class="visually-hidden">View CSV Data</span>
                                                                             </a>
-                                                                            <a href="{% url 'visualize_data' csv.id %}" class="dropdown-action-btn" title="Visualize Data">
+                                                                            <a href="{% url 'visualize_data' csv.id %}" class="dropdown-action-btn" title="Visualize Data" aria-label="Visualize Data">
                                                                                 <i class="fas fa-chart-bar"></i>
+                                                                                <span class="visually-hidden">Visualize Data</span>
                                                                             </a>
                                                                         </div>
                                                                     </div>
                                                                 </a>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
+                                                            </li>{% endfor %}</ul>
                                                 </div>
                                             {% endif %}
                                         {% endwith %}
                                     </td>
                                     <td>
                                         <div class="action-btns">
-                                            <a href="{% url 'edit_event' event.id %}" class="action-btn edit" title="Edit Event">
+                                            <a href="{% url 'edit_event' event.id %}" class="action-btn edit" title="Edit Event" aria-label="Edit Event">
                                                 <i class="fas fa-edit"></i>
+                                                <span class="visually-hidden">Edit Event</span>
                                             </a>
-                                            <a href="{% url 'upload_csv' event.id %}" class="action-btn upload" title="Upload CSV">
+                                            <a href="{% url 'upload_csv' event.id %}" class="action-btn upload" title="Upload CSV" aria-label="Upload CSV">
                                                 <i class="fas fa-upload"></i>
+                                                <span class="visually-hidden">Upload CSV</span>
                                             </a>
-                                            <button type="button" class="action-btn delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}" title="Delete Event">
+                                            <button type="button" class="action-btn delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}" title="Delete Event" aria-label="Delete Event">
                                                 <i class="fas fa-trash-alt"></i>
+                                                <span class="visually-hidden">Delete Event</span>
                                             </button>
                                         </div>
 
@@ -962,13 +1067,7 @@
                     <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-upload me-2"></i>Select Event
                     </button>
-                    <ul class="dropdown-menu">
-                        {% for event in events %}
-                            <li><a class="dropdown-item" href="{% url 'upload_csv' event.id %}">{{ event.name }}</a></li>
-                        {% empty %}
-                            <li><a class="dropdown-item disabled" href="#">No events available</a></li>
-                        {% endfor %}
-                    </ul>
+                    <ul class="dropdown-menu">{% for event in events %}<li><a class="dropdown-item" href="{% url 'upload_csv' event.id %}" title="{{ event.name }}" aria-label="Upload CSV for {{ event.name }}">{{ event.name }}</a></li>{% empty %}<li><a class="dropdown-item disabled" href="#" aria-label="No events available">No events available</a></li>{% endfor %}</ul>
                 </div>
             {% else %}
                 <button type="button" class="btn btn-success" disabled>
@@ -987,13 +1086,7 @@
                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-chart-bar me-2"></i>Select CSV
                     </button>
-                    <ul class="dropdown-menu">
-                        {% for csv in csv_files %}
-                            <li><a class="dropdown-item" href="{% url 'visualize_data' csv.id %}">{{ csv.event.name }} - {{ csv.get_filename }}</a></li>
-                        {% empty %}
-                            <li><a class="dropdown-item disabled" href="#">No CSV files available</a></li>
-                        {% endfor %}
-                    </ul>
+                    <ul class="dropdown-menu">{% for csv in csv_files %}<li><a class="dropdown-item" href="{% url 'visualize_data' csv.id %}" title="{{ csv.event.name }} - {{ csv.get_filename }}" aria-label="Visualize data for {{ csv.event.name }} - {{ csv.get_filename }}">{{ csv.event.name }} - {{ csv.get_filename }}</a></li>{% empty %}<li><a class="dropdown-item disabled" href="#" aria-label="No CSV files available">No CSV files available</a></li>{% endfor %}</ul>
                 </div>
             {% else %}
                 <button type="button" class="btn btn-info" disabled>
