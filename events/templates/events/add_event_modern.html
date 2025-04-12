@@ -1,0 +1,376 @@
+{% extends 'events/base_modern.html' %}
+
+{% block title %}{{ action }} Event{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://res.cloudinary.com/dxgbphyhj/image/upload/v1712950000/pattern_bg_rvzwxl.svg');
+        background-size: cover;
+        opacity: 0.1;
+    }
+    
+    .form-title {
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-title i {
+        margin-right: 0.75rem;
+    }
+    
+    .form-body {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-label i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    
+    .error-feedback {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+    }
+    
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    
+    .btn-back:hover {
+        background-color: #5a6268;
+        transform: translateY(-3px);
+    }
+    
+    .btn-back i {
+        margin-right: 0.5rem;
+    }
+    
+    .btn-save {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    
+    .btn-save:hover {
+        background-color: #3d8b40;
+        transform: translateY(-3px);
+    }
+    
+    .btn-save i {
+        margin-right: 0.5rem;
+    }
+    
+    .image-preview {
+        width: 100%;
+        height: 200px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 1rem;
+        position: relative;
+        background-color: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-preview-placeholder {
+        color: rgba(0, 0, 0, 0.2);
+        font-size: 3rem;
+    }
+    
+    .current-image-container {
+        margin-bottom: 1rem;
+    }
+    
+    .current-image-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .current-image {
+        width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .form-card {
+        background-color: #2d3748;
+    }
+    
+    [data-bs-theme="dark"] .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+    }
+    
+    [data-bs-theme="dark"] .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .image-preview {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-bs-theme="dark"] .image-preview-placeholder {
+        color: rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container" data-aos="fade-up">
+    <div class="form-card">
+        <div class="form-header">
+            <h4 class="form-title">
+                {% if action == 'Add' %}
+                    <i class="fas fa-calendar-plus"></i>Add New Event
+                {% else %}
+                    <i class="fas fa-edit"></i>Edit Event: {{ event.name }}
+                {% endif %}
+            </h4>
+        </div>
+        <div class="form-body">
+            <form method="post" enctype="multipart/form-data" id="eventForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                        <i class="fas fa-signature"></i>Event Name
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="error-feedback">
+                            {{ form.name.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.date.id_for_label }}" class="form-label">
+                        <i class="fas fa-calendar-alt"></i>Event Date
+                    </label>
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="error-feedback">
+                            {{ form.date.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.venue.id_for_label }}" class="form-label">
+                        <i class="fas fa-map-marker-alt"></i>Venue
+                    </label>
+                    {{ form.venue }}
+                    {% if form.venue.errors %}
+                        <div class="error-feedback">
+                            {{ form.venue.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.highlights.id_for_label }}" class="form-label">
+                        <i class="fas fa-star"></i>Highlights
+                    </label>
+                    {{ form.highlights }}
+                    {% if form.highlights.errors %}
+                        <div class="error-feedback">
+                            {{ form.highlights.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Enter key highlights of the event, one per line.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.form_link.id_for_label }}" class="form-label">
+                        <i class="fas fa-link"></i>Google Form Link
+                    </label>
+                    {{ form.form_link }}
+                    {% if form.form_link.errors %}
+                        <div class="error-feedback">
+                            {{ form.form_link.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Enter the full URL to the Google Form for collecting feedback.</div>
+                </div>
+                
+                <div class="form-group">
+                    {% if event.image %}
+                        <div class="current-image-container">
+                            <div class="current-image-label">
+                                <i class="fas fa-image me-2"></i>Current Image
+                            </div>
+                            <img src="{{ event.image.url }}" alt="{{ event.name }}" class="current-image">
+                        </div>
+                    {% endif %}
+                    
+                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i>Event Image
+                    </label>
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <div class="error-feedback">
+                            {{ form.image.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Upload an image for the event (optional).</div>
+                    
+                    <div class="image-preview" id="imagePreview">
+                        <i class="fas fa-image image-preview-placeholder"></i>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'dashboard' %}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>Back to Dashboard
+                    </a>
+                    <button type="submit" class="btn-save" id="saveButton">
+                        <i class="fas fa-save"></i>Save Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image preview functionality
+        const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+        const imagePreview = document.getElementById('imagePreview');
+        const placeholder = imagePreview.querySelector('.image-preview-placeholder');
+        
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Remove placeholder
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                    
+                    // Remove any existing preview image
+                    const existingImg = imagePreview.querySelector('img');
+                    if (existingImg) {
+                        existingImg.remove();
+                    }
+                    
+                    // Create new image element
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    imagePreview.appendChild(img);
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Form submission animation
+        const eventForm = document.getElementById('eventForm');
+        const saveButton = document.getElementById('saveButton');
+        
+        eventForm.addEventListener('submit', function() {
+            saveButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>Saving...';
+            saveButton.disabled = true;
+        });
+    });
+</script>
+{% endblock %}

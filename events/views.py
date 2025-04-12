@@ -58,8 +58,8 @@ def dashboard(request):
         csv_count = csv_files.count()
         visualization_count = csv_count  # Each CSV can be visualized
 
-        # Render the modern dashboard template
-        return render(request, 'events/dashboard_modern.html', {
+        # Render the professional dashboard template
+        return render(request, 'events/dashboard_pro.html', {
             'events': events,
             'csv_files': csv_files,
             'csv_count': csv_count,
@@ -95,7 +95,7 @@ def add_event(request):
                 messages.error(request, f"Error saving event: {str(e)}")
     else:
         form = EventForm()
-    return render(request, 'events/add_event.html', {'form': form, 'action': 'Add'})
+    return render(request, 'events/add_event_modern.html', {'form': form, 'action': 'Add'})
 
 @login_required
 def edit_event(request, event_id):
@@ -116,7 +116,7 @@ def edit_event(request, event_id):
                 messages.error(request, f"Error updating event: {str(e)}")
     else:
         form = EventForm(instance=event)
-    return render(request, 'events/add_event.html', {'form': form, 'event': event, 'action': 'Edit'})
+    return render(request, 'events/add_event_modern.html', {'form': form, 'event': event, 'action': 'Edit'})
 
 @login_required
 def delete_event(request, event_id):
@@ -168,7 +168,7 @@ def upload_csv(request, event_id):
                 messages.error(request, f"Error uploading CSV: {str(e)}")
     else:
         form = CSVUploadForm()
-    return render(request, 'events/upload_csv.html', {'form': form, 'event': event})
+    return render(request, 'events/upload_csv_modern.html', {'form': form, 'event': event})
 
 @login_required
 def view_csv(request, csv_id):
