@@ -59,7 +59,21 @@ class CSVFile(models.Model):
     description = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"{self.event.name} - {os.path.basename(self.file.name)}"
+        return f"{self.event.name} - {self.get_filename()}"
+
+    def get_filename(self):
+        # Handle both Cloudinary and regular file fields
+        if hasattr(self.file, 'name'):
+            # Regular file field
+            return os.path.basename(self.file.name)
+        elif hasattr(self.file, 'public_id'):
+            # Cloudinary resource
+            # Extract filename from the public_id (which is usually path/filename)
+            return os.path.basename(self.file.public_id)
+        else:
+            # Fallback
+            return f"file-{self.id}"
 
     def filename(self):
-        return os.path.basename(self.file.name)
+        # For backward compatibility
+        return self.get_filename()

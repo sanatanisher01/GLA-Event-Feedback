@@ -47,170 +47,35 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    # Create an extremely basic HTML response that will definitely work
-    html = '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Emergency Dashboard</title>
-        <style>
-            :root {
-                --bg-color: #ffffff;
-                --text-color: #333333;
-                --card-bg: #ffffff;
-                --card-border: #dddddd;
-                --alert-bg: #d1ecf1;
-                --alert-color: #0c5460;
-                --alert-border: #bee5eb;
-            }
-
-            @media (prefers-color-scheme: dark) {
-                :root {
-                    --bg-color: #121212;
-                    --text-color: #e0e0e0;
-                    --card-bg: #1e1e1e;
-                    --card-border: #333333;
-                    --alert-bg: #0c343d;
-                    --alert-color: #8ed9f6;
-                    --alert-border: #0e6e8c;
-                }
-            }
-
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 20px;
-                background-color: var(--bg-color);
-                color: var(--text-color);
-            }
-            h1, h2, h3 { color: var(--text-color); }
-            .container { max-width: 1200px; margin: 0 auto; }
-            .card {
-                border: 1px solid var(--card-border);
-                border-radius: 5px;
-                padding: 15px;
-                margin-bottom: 20px;
-                background-color: var(--card-bg);
-            }
-            .btn {
-                display: inline-block;
-                padding: 8px 16px;
-                background-color: #007bff;
-                color: white;
-                text-decoration: none;
-                border-radius: 4px;
-                margin-right: 5px;
-            }
-            .btn-success { background-color: #28a745; }
-            .btn-warning { background-color: #ffc107; color: #212529; }
-            .btn-danger { background-color: #dc3545; }
-            .btn-secondary { background-color: #6c757d; }
-            .btn-info { background-color: #17a2b8; }
-            .btn-primary { background-color: #007bff; }
-            .alert {
-                padding: 15px;
-                border-radius: 4px;
-                margin-bottom: 20px;
-            }
-            .alert-info {
-                background-color: var(--alert-bg);
-                color: var(--alert-color);
-                border: 1px solid var(--alert-border);
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Emergency Dashboard</h1>
-            <p>This is a simplified dashboard to ensure you can access basic functionality.</p>
-
-            <div class="card">
-                <h2>Actions</h2>
-                <a href="/" class="btn btn-secondary">Home</a>
-                <a href="/add_event/" class="btn btn-success">Add New Event</a>
-            </div>
-
-            <div class="card">
-                <h2>Events</h2>
-    '''
-
-    # Get events with minimal querying
     try:
-        events = Event.objects.all().values('id', 'name', 'date', 'venue')
+        # Get all events ordered by date (newest first)
+        events = Event.objects.all().order_by('-date')
 
-        if events:
-            for event in events:
-                html += f'''
-                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                    <h3>{event['name']}</h3>
-                    <p>Date: {event['date']} | Venue: {event['venue']}</p>
-                    <div>
-                        <a href="/edit_event/{event['id']}/" class="btn btn-warning">Edit</a>
-                        <a href="/upload_csv/{event['id']}/" class="btn btn-success">Upload CSV</a>
-                        <a href="/delete_event/{event['id']}/" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this event?');">Delete</a>
-                    </div>
-                </div>
-                '''
-        else:
-            html += '''
-            <div class="alert alert-info">
-                No events found. Click "Add New Event" to create your first event.
-            </div>
-            '''
+        # Get all CSV files
+        csv_files = CSVFile.objects.all().select_related('event')
+
+        # Count statistics
+        csv_count = csv_files.count()
+        visualization_count = csv_count  # Each CSV can be visualized
+
+        # Render the enhanced dashboard template
+        return render(request, 'events/dashboard_enhanced.html', {
+            'events': events,
+            'csv_files': csv_files,
+            'csv_count': csv_count,
+            'visualization_count': visualization_count
+        })
     except Exception as e:
-        html += f'''
-        <div class="alert alert-info">
-            Error loading events: {str(e)}
-        </div>
-        '''
+        # Log the error
+        import traceback
+        print(f"Dashboard error: {str(e)}")
+        print(f"Error type: {type(e).__name__}")
+        print("Traceback:")
+        traceback.print_exc()
 
-    html += '''
-            </div>
-
-            <div class="card">
-                <h2>CSV Files & Visualizations</h2>
-    '''
-
-    # Get CSV files with minimal querying
-    try:
-        csv_files = CSVFile.objects.select_related('event').all()
-
-        if csv_files:
-            for csv_file in csv_files:
-                html += f'''
-                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                    <h3>{csv_file.filename()}</h3>
-                    <p>Event: {csv_file.event.name}</p>
-                    <div>
-                        <a href="/view_csv/{csv_file.id}/" class="btn btn-primary">View Data</a>
-                        <a href="/visualize/{csv_file.id}/" class="btn btn-info">Visualize</a>
-                        <a href="/download_csv/{csv_file.id}/" class="btn btn-secondary">Download</a>
-                    </div>
-                </div>
-                '''
-        else:
-            html += '''
-            <div class="alert alert-info">
-                No CSV files found. Upload CSV files for your events to see them here.
-            </div>
-            '''
-    except Exception as e:
-        html += f'''
-        <div class="alert alert-info">
-            Error loading CSV files: {str(e)}
-        </div>
-        '''
-
-    html += '''
-            </div>
-        </div>
-    </body>
-    </html>
-    '''
-
-    return HttpResponse(html)
+        # Show error message
+        messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
+        return redirect('index')
 
 @login_required
 def add_event(request):
