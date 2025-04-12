@@ -1,0 +1,266 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-tachometer-alt me-2"></i>Manager Dashboard</h2>
+            <p class="text-muted">Manage events, feedback, and visualizations</p>
+        </div>
+        <a href="{% url 'add_event' %}" class="btn btn-success btn-lg hover-lift">
+            <i class="fas fa-plus me-2"></i>Add New Event
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-calendar-alt text-primary fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total Events</h6>
+                        <h3 class="mb-0">{{ events|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-file-csv text-success fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">CSV Files</h6>
+                        <h3 class="mb-0">{{ csv_count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-chart-pie text-info fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Visualizations</h6>
+                        <h3 class="mb-0">{{ visualization_count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Management -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Events Management</h4>
+        </div>
+        <div class="card-body p-0">
+            {% if events %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Form Link</th>
+                                <th>CSV Files</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if event.image %}
+                                                <div class="me-3">
+                                                    <img src="{{ event.image.url }}" alt="{{ event.name }}" class="rounded" width="50" height="50" style="object-fit: cover;">
+                                                </div>
+                                            {% else %}
+                                                <div class="me-3">
+                                                    <div class="rounded bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                        <i class="fas fa-calendar-day text-secondary"></i>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ event.name }}</h6>
+                                                <small class="text-muted">{{ event.highlights|truncatechars:50 }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ event.date }}</td>
+                                    <td>{{ event.venue }}</td>
+                                    <td>
+                                        {% if event.form_link %}
+                                            <a href="{{ event.form_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i>Open Form
+                                            </a>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No Link</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% with csv_files=event.csvfile_set.all %}
+                                            <span class="badge bg-info">{{ csv_files|length }} files</span>
+                                            {% if csv_files %}
+                                                <div class="dropdown d-inline-block ms-1">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                        View
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        {% for csv in csv_files %}
+                                                            <li>
+                                                                <div class="dropdown-item">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <span>{{ csv.filename }}</span>
+                                                                        <div>
+                                                                            <a href="{% url 'view_csv' csv.id %}" class="btn btn-sm btn-outline-primary">
+                                                                                <i class="fas fa-table"></i>
+                                                                            </a>
+                                                                            <a href="{% url 'visualize_data' csv.id %}" class="btn btn-sm btn-outline-info">
+                                                                                <i class="fas fa-chart-bar"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit me-1"></i>Edit
+                                            </a>
+                                            <a href="{% url 'upload_csv' event.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-upload me-1"></i>Upload
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}">
+                                                <i class="fas fa-trash-alt me-1"></i>Delete
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ event.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ event.id }}">Confirm Deletion</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete the event <strong>{{ event.name }}</strong>?</p>
+                                                        <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form method="POST" action="{% url 'delete_event' event.id %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger">Delete Event</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info m-3">
+                    <i class="fas fa-info-circle me-2"></i>No events have been added yet. Click the "Add New Event" button to create your first event.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white py-3">
+            <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Quick Actions</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card hover-lift h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                                <i class="fas fa-calendar-plus text-primary fa-2x"></i>
+                            </div>
+                            <h5>Create New Event</h5>
+                            <p class="text-muted">Add a new event with details and form link</p>
+                            <a href="{% url 'add_event' %}" class="btn btn-primary">Create Event</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card hover-lift h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                                <i class="fas fa-file-upload text-success fa-2x"></i>
+                            </div>
+                            <h5>Upload Feedback</h5>
+                            <p class="text-muted">Upload CSV feedback data for an event</p>
+                            {% if events %}
+                                <div class="dropdown">
+                                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Select Event
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for event in events %}
+                                            <li><a class="dropdown-item" href="{% url 'upload_csv' event.id %}">{{ event.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <button class="btn btn-success" disabled>No Events</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card hover-lift h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                                <i class="fas fa-chart-bar text-info fa-2x"></i>
+                            </div>
+                            <h5>View Visualizations</h5>
+                            <p class="text-muted">Analyze feedback data with visualizations</p>
+                            {% if csv_files %}
+                                <div class="dropdown">
+                                    <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Select CSV
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for csv in csv_files %}
+                                            <li><a class="dropdown-item" href="{% url 'visualize_data' csv.id %}">{{ csv.event.name }} - {{ csv.filename }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <button class="btn btn-info" disabled>No CSV Files</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

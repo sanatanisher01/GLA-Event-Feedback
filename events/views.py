@@ -47,73 +47,35 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    # Create a super simple dashboard view that will definitely work
-    events = Event.objects.all().order_by('-date')
+    try:
+        # Get all events ordered by date (newest first)
+        events = Event.objects.all().order_by('-date')
 
-    # Create a simple HTML response directly
-    html = '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div class="container mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Manager Dashboard</h2>
-                <a href="/add_event/" class="btn btn-success">Add New Event</a>
-            </div>
+        # Get all CSV files
+        csv_files = CSVFile.objects.all().select_related('event')
 
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Events Management</h4>
-                </div>
-                <div class="card-body">
-    '''
+        # Count statistics
+        csv_count = csv_files.count()
+        visualization_count = csv_count  # Each CSV can be visualized
 
-    if events:
-        html += '<ul class="list-group">'
-        for event in events:
-            html += f'''
-            <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5>{event.name}</h5>
-                        <p class="mb-1">Date: {event.date}</p>
-                        <p class="mb-1">Venue: {event.venue}</p>
-                    </div>
-                    <div>
-                        <a href="/edit_event/{event.id}/" class="btn btn-warning btn-sm">Edit</a>
-                        <form method="POST" action="/delete_event/{event.id}/" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
-                        </form>
-                        <a href="/upload_csv/{event.id}/" class="btn btn-primary btn-sm">Upload CSV</a>
-                    </div>
-                </div>
-            </li>
-            '''
-        html += '</ul>'
-    else:
-        html += '''
-        <div class="alert alert-info">
-            No events have been added yet. Click the "Add New Event" button to create your first event.
-        </div>
-        '''
+        # Render the enhanced dashboard template
+        return render(request, 'events/dashboard_enhanced.html', {
+            'events': events,
+            'csv_files': csv_files,
+            'csv_count': csv_count,
+            'visualization_count': visualization_count
+        })
+    except Exception as e:
+        # Log the error
+        import traceback
+        print(f"Dashboard error: {str(e)}")
+        print(f"Error type: {type(e).__name__}")
+        print("Traceback:")
+        traceback.print_exc()
 
-    html += '''
-                </div>
-            </div>
-            <a href="/" class="btn btn-secondary">Back to Home</a>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-    </html>
-    '''
-
-    return HttpResponse(html)
+        # Show error message
+        messages.error(request, f"An error occurred while loading the dashboard. Please try again or contact support.")
+        return redirect('index')
 
 @login_required
 def add_event(request):
