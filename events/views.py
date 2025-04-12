@@ -121,14 +121,32 @@ def edit_event(request, event_id):
 @login_required
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    # Handle both GET and POST for simplicity in emergency mode
-    event_name = event.name
-    try:
-        event.delete()
-        messages.success(request, f'Event "{event_name}" deleted successfully!')
-    except Exception as e:
-        messages.error(request, f'Error deleting event: {str(e)}')
-    return redirect('dashboard')
+
+    if request.method == 'POST':
+        # Get associated CSV files to delete them first (to avoid orphaned files)
+        csv_files = CSVFile.objects.filter(event=event)
+
+        # Store event name before deletion for success message
+        event_name = event.name
+
+        try:
+            # Delete associated CSV files first
+            for csv_file in csv_files:
+                try:
+                    csv_file.delete()
+                except Exception as csv_error:
+                    print(f"Error deleting CSV file {csv_file.id}: {str(csv_error)}")
+
+            # Then delete the event
+            event.delete()
+            messages.success(request, f'Event "{event_name}" deleted successfully!')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.error(request, f'Error deleting event: {str(e)}')
+            return redirect('dashboard')
+
+    # For GET requests, show confirmation page
+    return render(request, 'events/delete_event.html', {'event': event})
 
 @login_required
 def upload_csv(request, event_id):

@@ -3,44 +3,68 @@
 {% block title %}Delete Event{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Delete Event</h4>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Warning:</strong> You are about to delete the event "{{ event.name }}". This action cannot be undone.
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm hover-lift">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion</h4>
                 </div>
-                
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ event.name }}</h5>
-                        <p class="card-text"><i class="fas fa-calendar-alt me-2"></i>{{ event.date }}</p>
-                        <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ event.venue }}</p>
-                        
-                        {% if event.csv_files.count > 0 %}
-                            <div class="alert alert-danger">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                <strong>Note:</strong> This event has {{ event.csv_files.count }} CSV file{{ event.csv_files.count|pluralize }} attached. Deleting this event will also delete all associated CSV files.
+                <div class="card-body p-4">
+                    <div class="alert alert-warning">
+                        <p class="mb-0"><i class="fas fa-exclamation-circle me-2"></i><strong>Warning:</strong> This action cannot be undone!</p>
+                    </div>
+
+                    <h5 class="mb-4">Are you sure you want to delete the event <strong>"{{ event.name }}"</strong>?</h5>
+
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                {% if event.image %}
+                                    <div class="me-3">
+                                        <img src="{{ event.image.url }}" alt="{{ event.name }}" class="rounded" width="80" height="80" style="object-fit: cover;">
+                                    </div>
+                                {% else %}
+                                    <div class="me-3">
+                                        <div class="rounded bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                            <i class="fas fa-calendar-day text-secondary fa-2x"></i>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h5 class="mb-1">{{ event.name }}</h5>
+                                    <p class="mb-1"><i class="fas fa-calendar-alt me-2"></i>{{ event.date }}</p>
+                                    <p class="mb-1"><i class="fas fa-map-marker-alt me-2"></i>{{ event.venue }}</p>
+                                    {% if event.form_link %}
+                                        <a href="{{ event.form_link }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                            <i class="fas fa-external-link-alt me-1"></i>View Form
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% with csv_count=event.csvfile_set.count %}
+                        {% if csv_count > 0 %}
+                            <div class="alert alert-danger mb-4">
+                                <p class="mb-0"><i class="fas fa-file-csv me-2"></i>This will also delete <strong>{{ csv_count }}</strong> associated CSV file{{ csv_count|pluralize }} and all visualizations.</p>
                             </div>
                         {% endif %}
-                    </div>
-                </div>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    {% endwith %}
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary me-2">
                             <i class="fas fa-times me-2"></i>Cancel
                         </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash-alt me-2"></i>Delete Event
-                        </button>
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Event
+                            </button>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
