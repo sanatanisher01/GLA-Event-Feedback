@@ -9,7 +9,7 @@ A secure full-stack web application for college event feedback using Django. The
 - Each event has a button linking to the Google Form
 
 ### Manager Dashboard (Login Protected)
-- Secure login system (username: Ankurrai@gla, password: AnkurRai@010GLA)
+- Secure login system 
 - Add new events (event name, date, venue, highlights, Google Form link)
 - Upload CSV file (exported from Google Form) linked to that event
 - View uploaded CSVs (preview in table)
