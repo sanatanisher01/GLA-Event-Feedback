@@ -1,0 +1,472 @@
+{% extends 'events/base_modern.html' %}
+
+{% block title %}Manage CSV Files | GLA Event Feedback{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main Container */
+    .manage-csv-container {
+        padding: 2rem 0;
+    }
+
+    /* Header Section */
+    .manage-csv-header {
+        margin-bottom: 2rem;
+    }
+
+    .manage-csv-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .manage-csv-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background-color: var(--bs-primary);
+        border-radius: 3px;
+    }
+
+    .manage-csv-subtitle {
+        color: var(--bs-gray-600);
+        margin-top: 1rem;
+    }
+
+    /* Event Card */
+    .event-card {
+        background-color: var(--bs-body-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    [data-bs-theme="dark"] .event-card {
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .event-card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: rgba(var(--bs-primary-rgb), 0.03);
+    }
+
+    [data-bs-theme="dark"] .event-card-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    .event-card-title {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .event-card-title i {
+        margin-right: 0.75rem;
+        color: var(--bs-primary);
+        font-size: 1.5rem;
+    }
+
+    .event-status {
+        font-size: 0.875rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .event-status.active {
+        background-color: rgba(var(--bs-success-rgb), 0.1);
+        color: var(--bs-success);
+    }
+
+    .event-status.expired {
+        background-color: rgba(var(--bs-danger-rgb), 0.1);
+        color: var(--bs-danger);
+    }
+
+    .event-card-body {
+        padding: 1.5rem;
+    }
+
+    .event-info {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+    }
+
+    [data-bs-theme="dark"] .event-info {
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .event-info-item {
+        display: flex;
+        align-items: center;
+        margin-right: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .event-info-item i {
+        margin-right: 0.5rem;
+        color: var(--bs-primary);
+        width: 18px;
+        text-align: center;
+    }
+
+    .event-info-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: var(--bs-gray-700);
+    }
+
+    [data-bs-theme="dark"] .event-info-label {
+        color: var(--bs-gray-300);
+    }
+
+    /* CSV Table */
+    .csv-table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-bs-theme="dark"] .csv-table-container {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .csv-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .csv-table th {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+    }
+
+    [data-bs-theme="dark"] .csv-table th {
+        background-color: rgba(var(--bs-primary-rgb), 0.15);
+    }
+
+    .csv-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .csv-table tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .csv-table tr:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.03);
+    }
+
+    [data-bs-theme="dark"] .csv-table tr:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.08);
+    }
+
+    .csv-table tr:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    [data-bs-theme="dark"] .csv-table tr:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .csv-filename {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .csv-filename i {
+        margin-right: 0.75rem;
+        color: var(--bs-primary);
+        font-size: 1.25rem;
+    }
+
+    .csv-date {
+        color: var(--bs-gray-600);
+        font-size: 0.875rem;
+    }
+
+    [data-bs-theme="dark"] .csv-date {
+        color: var(--bs-gray-400);
+    }
+
+    .csv-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .csv-action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bs-gray-700);
+        background-color: var(--bs-gray-100);
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    [data-bs-theme="dark"] .csv-action-btn {
+        color: var(--bs-gray-300);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .csv-action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .csv-action-btn.view:hover {
+        background-color: rgba(var(--bs-info-rgb), 0.1);
+        color: var(--bs-info);
+    }
+
+    .csv-action-btn.visualize:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        color: var(--bs-primary);
+    }
+
+    .csv-action-btn.download:hover {
+        background-color: rgba(var(--bs-success-rgb), 0.1);
+        color: var(--bs-success);
+    }
+
+    .csv-action-btn.delete:hover {
+        background-color: rgba(var(--bs-danger-rgb), 0.1);
+        color: var(--bs-danger);
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+        background-color: rgba(var(--bs-light-rgb), 0.5);
+        border-radius: 8px;
+        border: 1px dashed rgba(0, 0, 0, 0.1);
+    }
+
+    [data-bs-theme="dark"] .empty-state {
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: var(--bs-gray-400);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--bs-gray-700);
+    }
+
+    [data-bs-theme="dark"] .empty-state-title {
+        color: var(--bs-gray-300);
+    }
+
+    .empty-state-text {
+        color: var(--bs-gray-600);
+        margin-bottom: 1.5rem;
+    }
+
+    [data-bs-theme="dark"] .empty-state-text {
+        color: var(--bs-gray-400);
+    }
+
+    /* Upload Button */
+    .upload-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        background-color: var(--bs-primary);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .upload-btn:hover {
+        background-color: var(--bs-primary-dark, #0056b3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
+        color: white;
+    }
+
+    .upload-btn i {
+        margin-right: 0.75rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .event-info {
+            flex-direction: column;
+        }
+        
+        .event-info-item {
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+        }
+        
+        .csv-actions {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="manage-csv-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="manage-csv-header">
+            <h1 class="manage-csv-title">Manage CSV Files</h1>
+            <p class="manage-csv-subtitle">View, manage, and analyze CSV files for all events</p>
+        </div>
+
+        <!-- Events with CSV Files -->
+        {% for event in events %}
+        <div class="event-card">
+            <div class="event-card-header">
+                <h2 class="event-card-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ event.name }}
+                </h2>
+                {% if event.is_expired %}
+                    <span class="event-status expired">
+                        <i class="fas fa-clock me-1"></i>Expired
+                    </span>
+                {% else %}
+                    <span class="event-status active">
+                        <i class="fas fa-check-circle me-1"></i>Active
+                    </span>
+                {% endif %}
+            </div>
+            <div class="event-card-body">
+                <div class="event-info">
+                    <div class="event-info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span class="event-info-label">Date:</span>
+                        {{ event.date }}
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="event-info-label">Venue:</span>
+                        {{ event.venue }}
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-file-csv"></i>
+                        <span class="event-info-label">CSV Files:</span>
+                        {{ event.csv_files.count }}
+                    </div>
+                </div>
+
+                {% with csv_files=event.csv_files.all %}
+                {% if csv_files %}
+                <div class="csv-table-container">
+                    <table class="csv-table">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Upload Date</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for csv in csv_files %}
+                            <tr>
+                                <td>
+                                    <div class="csv-filename">
+                                        <i class="fas fa-file-csv"></i>
+                                        {{ csv.get_filename }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="csv-date">
+                                        {{ csv.upload_date|date:"F d, Y" }}
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ csv.description|default:"No description" }}
+                                </td>
+                                <td>
+                                    <div class="csv-actions">
+                                        <a href="{% url 'view_csv' csv.id %}" class="csv-action-btn view" title="View CSV Data">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                        <a href="{% url 'visualize_data' csv.id %}" class="csv-action-btn visualize" title="Visualize Data">
+                                            <i class="fas fa-chart-bar"></i>
+                                        </a>
+                                        <a href="{% url 'download_csv' csv.id %}" class="csv-action-btn download" title="Download CSV">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <a href="{% url 'delete_csv' csv.id %}" class="csv-action-btn delete" title="Delete CSV" 
+                                           onclick="return confirm('Are you sure you want to delete this CSV file? This action cannot be undone.')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-file-csv empty-state-icon"></i>
+                    <h3 class="empty-state-title">No CSV Files</h3>
+                    <p class="empty-state-text">This event doesn't have any CSV files uploaded yet.</p>
+                    <a href="{% url 'upload_csv' event.id %}" class="upload-btn">
+                        <i class="fas fa-upload"></i>Upload CSV
+                    </a>
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-calendar-times empty-state-icon"></i>
+            <h3 class="empty-state-title">No Events Found</h3>
+            <p class="empty-state-text">There are no events in the system. Create an event first to manage CSV files.</p>
+            <a href="{% url 'add_event' %}" class="upload-btn">
+                <i class="fas fa-plus"></i>Add Event
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

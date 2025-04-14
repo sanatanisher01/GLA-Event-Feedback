@@ -552,6 +552,19 @@ def delete_csv(request, csv_id):
     return redirect('dashboard')
 
 
+@login_required
+def manage_csv(request):
+    """
+    View to manage CSV files by event
+    """
+    # Get all events with their CSV files, ordered by date (newest first)
+    events = Event.objects.all().order_by('-date').prefetch_related('csv_files')
+
+    return render(request, 'events/manage_csv.html', {
+        'events': events,
+    })
+
+
 def health_check(request):
     """
     Simple health check endpoint to verify the application is running.
