@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import os
+from datetime import date
 
 # Try to import CloudinaryField, but provide a fallback if it fails
 try:
@@ -42,6 +43,10 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    def is_expired(self):
+        """Check if the event date has passed"""
+        return self.date < date.today()
 
 def csv_file_path(instance, filename):
     # File will be uploaded to MEDIA_ROOT/csv_files/event_<id>/<filename>

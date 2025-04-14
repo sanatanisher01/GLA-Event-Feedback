@@ -215,16 +215,37 @@ def view_csv(request, csv_id):
             # For Cloudinary files
             import requests
             response = requests.get(csv_file.file.url)
-            content = response.content.decode('utf-8')
-            df = pd.read_csv(io.StringIO(content))
+            # Try different encodings if utf-8 fails
+            try:
+                content = response.content.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    content = response.content.decode('latin-1')
+                except UnicodeDecodeError:
+                    content = response.content.decode('cp1252', errors='replace')
+
+            # Try with different CSV reading parameters
+            try:
+                df = pd.read_csv(io.StringIO(content))
+            except Exception:
+                # Try with more flexible parsing
+                df = pd.read_csv(io.StringIO(content), sep=None, engine='python', on_bad_lines='skip')
         else:
             # For local files
-            df = pd.read_csv(csv_file.file.path)
+            try:
+                df = pd.read_csv(csv_file.file.path)
+            except Exception:
+                # Try with more flexible parsing
+                df = pd.read_csv(csv_file.file.path, sep=None, engine='python', on_bad_lines='skip')
 
         headers = df.columns.tolist()
         data = df.values.tolist()
     except Exception as e:
         messages.error(request, f'Error reading CSV file: {str(e)}')
+        print(f"CSV reading error: {str(e)}")
+        # Return empty data if file can't be read
+        headers = []
+        data = []
 
     return render(request, 'events/view_csv.html', {
         'csv_file': csv_file,
@@ -511,6 +532,24 @@ def visualize_data(request, csv_id):
         'current_chart_type': chart_type,
         'available_chart_types': available_chart_types
     })
+
+
+@login_required
+def delete_csv(request, csv_id):
+    """Delete a CSV file"""
+    csv_file = get_object_or_404(CSVFile, id=csv_id)
+    event_id = csv_file.event.id
+
+    # Store the name for the success message
+    csv_name = csv_file.get_filename()
+
+    # Delete the CSV file
+    csv_file.delete()
+
+    messages.success(request, f'CSV file "{csv_name}" has been deleted successfully.')
+
+    # Redirect back to the event dashboard
+    return redirect('dashboard')
 
 
 def health_check(request):

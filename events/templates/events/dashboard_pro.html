@@ -913,7 +913,14 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ event.date }}</td>
+                                    <td>
+                                        {{ event.date }}
+                                        {% if event.is_expired %}
+                                            <span class="badge bg-danger ms-2">Expired</span>
+                                        {% else %}
+                                            <span class="badge bg-success ms-2">Active</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ event.venue }}</td>
                                     <td>
                                         {% if event.form_link %}
@@ -944,6 +951,14 @@
                                                                             <a href="{% url 'visualize_data' csv.id %}" class="dropdown-action-btn" title="Visualize Data" aria-label="Visualize Data">
                                                                                 <i class="fas fa-chart-bar"></i>
                                                                                 <span class="visually-hidden">Visualize Data</span>
+                                                                            </a>
+                                                                            <a href="{% url 'download_csv' csv.id %}" class="dropdown-action-btn" title="Download CSV" aria-label="Download CSV">
+                                                                                <i class="fas fa-download"></i>
+                                                                                <span class="visually-hidden">Download CSV</span>
+                                                                            </a>
+                                                                            <a href="{% url 'delete_csv' csv.id %}" class="dropdown-action-btn text-danger" title="Delete CSV" aria-label="Delete CSV" onclick="return confirm('Are you sure you want to delete this CSV file? This action cannot be undone.')">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                                <span class="visually-hidden">Delete CSV</span>
                                                                             </a>
                                                                         </div>
                                                                     </div>
